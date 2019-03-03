@@ -21,19 +21,14 @@
 
 </FrameLayout>
 
-
-    <com.luseen.spacenavigation.SpaceNavigationView
-        android:id="@+id/space"
-        app:space_item_icon_size="32dp"
-        app:space_background_color="#fff"
-        app:active_item_color="@color/colorPrimary"
-        app:centre_button_color="#000"
-        app:active_centre_button_icon_color="#fff"
-        android:background="@color/colorPrimary"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
-       />
+        android:background="@color/colorWhite"
 
+        app:menu="@menu/menu" />
 
 </RelativeLayout>
