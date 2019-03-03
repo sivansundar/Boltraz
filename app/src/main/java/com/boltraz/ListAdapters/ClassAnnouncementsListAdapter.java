@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.R;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.w3c.dom.Text;
 
@@ -44,7 +46,9 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                Snackbar snackbar = Snackbar
+                        .make(v, viewHolder.title_text.getText(), Snackbar.LENGTH_SHORT);
+                snackbar.show();
             }
         });
     }
