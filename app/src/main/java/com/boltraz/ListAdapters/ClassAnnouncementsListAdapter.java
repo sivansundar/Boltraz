@@ -1,5 +1,6 @@
 package com.boltraz.ListAdapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.boltraz.CreateUserActivity;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.R;
 import com.google.android.material.snackbar.Snackbar;
@@ -23,6 +25,7 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
 
     public List<ClassAnnouncementsModel> classAnnouncementsList;
 
+    public Context context;
 
     public ClassAnnouncementsListAdapter(List<ClassAnnouncementsModel> classAnnouncementsList) {
 
@@ -34,6 +37,7 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.classanoun_list_item, viewGroup, false);
+
         return new ViewHolder(view);
     }
 
@@ -49,6 +53,9 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
                 Snackbar snackbar = Snackbar
                         .make(v, viewHolder.title_text.getText(), Snackbar.LENGTH_SHORT);
                 snackbar.show();
+
+                Intent intent = new Intent(context, CreateUserActivity.class);
+                context.startActivity(intent);
             }
         });
     }
@@ -69,6 +76,8 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
+
+            context = itemView.getContext();
 
 
 

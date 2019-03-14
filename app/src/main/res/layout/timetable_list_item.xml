@@ -7,14 +7,12 @@
     android:background="@color/colorPrimary">
 
     <LinearLayout
-        android:padding="8dp"
         android:orientation="vertical"
-        android:layout_below="@id/spinner_card"
         android:id="@+id/timetable_viewHolder"
         android:layout_width="match_parent"
         android:layout_height="140dp">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             app:cardCornerRadius="8dp"
             app:cardElevation="10dp"
             android:layout_width="match_parent"
@@ -95,7 +93,7 @@
 
             </RelativeLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 

@@ -8,15 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.boltraz.ListAdapters.ClassAnnouncementsListAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 import com.boltraz.ListAdapters.TimetableListAdapter;
-import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,9 +31,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,9 +48,23 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private static final String ARG_PARAM2 = "param2";
     RecyclerView timetableRecyclerView;
 
+
+    @BindView(R.id.monday_tab)
+    TabItem mondayTab;
+    @BindView(R.id.tuesday_tab)
+    TabItem tuesdayTab;
+    @BindView(R.id.wednesday_tab)
+    TabItem wednesdayTab;
+    @BindView(R.id.thursday_tab)
+    TabItem thursdayTab;
+    @BindView(R.id.friday_tab)
+    TabItem fridayTab;
+
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    public String day = "Monday";
 
     private TimetableListAdapter timetableListAdapter;
     private List<TimetableModel> timetableList;
@@ -96,6 +111,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         mFirebaseFirestoredb = FirebaseFirestore.getInstance();
 
         View v = inflater.inflate(R.layout.fragment_timetable, container, false);
+        TabLayout tabLayout;
+        tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
 
         timetableRecyclerView = (RecyclerView) v.findViewById(R.id.timetable_recyclerView);
 
@@ -106,29 +123,56 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         timetableRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         timetableRecyclerView.setAdapter(timetableListAdapter);
 
+        getTimeTable(day);
 
+        // Sends a firebase query to pull according to day.
 
-        Spinner spinner = v.findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(this);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    String day = tab.getText().toString();
 
-        List<String> daysList = new ArrayList<String>();
-        daysList.add("Monday");
-        daysList.add("Tuesday");
-        daysList.add("Wednesday");
-        daysList.add("Thursday");
-        daysList.add("Friday");
+                    switch (day) {
+                        case "Monday" :
+                            getTimeTable("Monday");
+                            Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
+                            break;
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item, daysList);
+                        case "Tuesday" :
+                            getTimeTable("Tuesday");
+                            break;
 
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        case "Wednesday" :
+                            getTimeTable("Wednesday");
+                            break;
+                        case "Thursday" :
+                            getTimeTable("Thursday");
+                            break;
 
-        spinner.setAdapter(dataAdapter);
+                        case "Friday" :
+                            getTimeTable("Friday");
+                            break;
 
-       //    getTimeTable("Monday"); // Sends a firebase query to pull according to day.
+                            default:
+                                Toast.makeText(getContext(), "Nothing happens", Toast.LENGTH_SHORT).show();
+                                break;
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
 
         return v;
     }
+
 
     private void getTimeTable(String day) {
 
@@ -163,7 +207,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
             }
         });
-        
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -9,42 +9,69 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <RelativeLayout
-        android:id="@+id/spinner_viewHolder"
-        android:padding="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/spinner_card"
-            app:cardElevation="10dp"
-            app:cardCornerRadius="8dp"
-            android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            app:tabGravity="center"
+            app:tabRippleColor="@color/colorPrimaryDark"
+            app:tabMode="scrollable"
+            android:scrollbars="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="250dp"
-                android:layout_height="50dp" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/monday_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monday"/>
 
-        </androidx.cardview.widget.CardView>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tuesday_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tuesday"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/wednesday_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wednesday"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/thursday_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thursday"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/friday_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Friday"/>
 
 
-        <LinearLayout
-            android:layout_below="@id/spinner_card"
+
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@id/tab_layout"
+            android:id="@+id/timetable_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="30dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/timetable_recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="30dp">
+        </androidx.recyclerview.widget.RecyclerView>
 
-            </androidx.recyclerview.widget.RecyclerView>
 
-        </LinearLayout>
 
     </RelativeLayout>
+
 
 </FrameLayout>
