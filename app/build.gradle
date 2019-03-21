@@ -55,9 +55,13 @@ dependencies {
 
     //Firebase
     implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-database:16.0.6'
+
     implementation 'com.google.firebase:firebase-auth:16.1.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.google.firebase:firebase-firestore:17.1.5'
+    implementation 'com.firebaseui:firebase-ui-database:4.3.1'
+
     //implementation 'com.google.firebase:firebase-admin:6.6.0'
 
     implementation 'com.mikhaellopez:circularimageview:3.2.0'

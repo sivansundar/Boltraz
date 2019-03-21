@@ -26,6 +26,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -60,7 +62,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    private FirebaseFirestore mFirebaseFirestoreDb;
+    private FirebaseDatabase mFirebaseDatabase;
+
+    private DatabaseReference mDatabaseReference;
+
     String userEmail;
     String password;
     String userID;
@@ -71,7 +76,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        mFirebaseFirestoreDb = FirebaseFirestore.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference();
+
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -108,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth.addAuthStateListener(mAuthListener);
     }
+
 
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -162,21 +170,21 @@ public class LoginActivity extends AppCompatActivity {
                             studentDetails.put("UID", task.getResult().getUser().getUid());
                             studentDetails.put("Semester", 6);
 
-                            CollectionReference StudentCollection = mFirebaseFirestoreDb.collection("Students");
-                            StudentCollection.document(userID).set(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "onSuccess: Doc added : Doc ID = " + userID);
-                                }
-                            })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.e(TAG, "onFailure: ",e );
-                                        }
-                                    });
+                            String uid = task.getResult().getUser().getUid();
 
-
+                           mDatabaseReference.child("students").child("semester6").child(uid).setValue(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                               @Override
+                               public void onSuccess(Void aVoid) {
+                                   Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+                               }
+                           })
+                                   .addOnFailureListener(new OnFailureListener() {
+                                       @Override
+                                       public void onFailure(@NonNull Exception e) {
+                                           Toast.makeText(LoginActivity.this, "Check LOG for details.", Toast.LENGTH_SHORT).show();
+                                           Log.e(TAG, "onFailure: ", e);
+                                       }
+                                   });
 
 
                           
@@ -241,25 +249,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void getLoginDocument() {
 
-        DocumentReference UserDocument = mFirebaseFirestoreDb.collection("Students").document(userID);
-
-        UserDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: Logged in by " + task.getResult().getData().get("Name").toString());
-                }
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-
-
-    }
 }

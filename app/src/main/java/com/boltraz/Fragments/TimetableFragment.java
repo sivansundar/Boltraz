@@ -108,67 +108,56 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mFirebaseFirestoredb = FirebaseFirestore.getInstance();
-
         View v = inflater.inflate(R.layout.fragment_timetable, container, false);
         TabLayout tabLayout;
         tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
 
-        timetableRecyclerView = (RecyclerView) v.findViewById(R.id.timetable_recyclerView);
 
-        timetableList = new ArrayList<>();
-        timetableListAdapter = new TimetableListAdapter(timetableList);
-
-        timetableRecyclerView.setHasFixedSize(true);
-        timetableRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        timetableRecyclerView.setAdapter(timetableListAdapter);
-
-        getTimeTable(day);
 
         // Sends a firebase query to pull according to day.
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    String day = tab.getText().toString();
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String day = tab.getText().toString();
 
-                    switch (day) {
-                        case "Monday" :
-                            getTimeTable("Monday");
-                            Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
-                            break;
+                switch (day) {
+                    case "Monday" :
+                       // getTimeTable("Monday");
+                        Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
+                        break;
 
-                        case "Tuesday" :
-                            getTimeTable("Tuesday");
-                            break;
+                    case "Tuesday" :
+                        //getTimeTable("Tuesday");
+                        break;
 
-                        case "Wednesday" :
-                            getTimeTable("Wednesday");
-                            break;
-                        case "Thursday" :
-                            getTimeTable("Thursday");
-                            break;
+                    case "Wednesday" :
+                        //getTimeTable("Wednesday");
+                        break;
+                    case "Thursday" :
+                      //  getTimeTable("Thursday");
+                        break;
 
-                        case "Friday" :
-                            getTimeTable("Friday");
-                            break;
+                    case "Friday" :
+                       // getTimeTable("Friday");
+                        break;
 
-                            default:
-                                Toast.makeText(getContext(), "Nothing happens", Toast.LENGTH_SHORT).show();
-                                break;
-                    }
+                    default:
+                        Toast.makeText(getContext(), "Nothing happens", Toast.LENGTH_SHORT).show();
+                        break;
                 }
+            }
 
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-                }
+            }
 
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
-                }
-            });
+            }
+        });
 
         return v;
     }
@@ -178,35 +167,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
         timetableList.clear();
 
-        mFirebaseFirestoredb.collection("Timetable").document("Timetable_6B_root").collection("Days").document(day).collection("Hours").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-
-                //String hour = mFirebaseFirestoredb.collection("Timetable").document("Timetable_6B_root").collection("Days").document(day).collection("Hours").getPath().toString();
-                if (e != null) {
-                    Log.e(TAG, "onEvent: getClassAnnouncements : ", e);
-                } else {
-                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-
-                        if (doc.getType() == DocumentChange.Type.ADDED || doc.getType() == DocumentChange.Type.MODIFIED) {
-                            String title = doc.getDocument().getString("Title");
-                            String hour = doc.getDocument().getId();
-                            Toast.makeText(getContext(), "" + hour, Toast.LENGTH_SHORT).show();
-
-                            Log.d(TAG, "onEvent: Docs : " + title);
-
-
-                            TimetableModel timetableModel = doc.getDocument().toObject(TimetableModel.class);
-                            timetableList.add(timetableModel);
-
-                            timetableListAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                }
-
-            }
-        });
+        //Implement Firebase Recycler Adapter
 
     }
 
@@ -236,9 +197,6 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String day = parent.getItemAtPosition(position).toString();
-        getTimeTable(day);
-        Toast.makeText(getContext(), "Selected item : " + parent.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();
 
     }
 

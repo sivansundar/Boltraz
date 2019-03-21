@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.CreateUserActivity;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.w3c.dom.Text;
 
@@ -45,16 +47,13 @@ public class ClassAnnouncementsListAdapter extends RecyclerView.Adapter<ClassAnn
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
 
         viewHolder.title_text.setText(classAnnouncementsList.get(i).getTitle());
-        viewHolder.descriptio_text.setText(classAnnouncementsList.get(i).getDescription());
+        viewHolder.descriptio_text.setText(classAnnouncementsList.get(i).getDesc());
 
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar snackbar = Snackbar
-                        .make(v, viewHolder.title_text.getText(), Snackbar.LENGTH_SHORT);
-                snackbar.show();
 
-                Intent intent = new Intent(context, CreateUserActivity.class);
+                Intent intent = new Intent(context, ClassAnnouncementsActivity.class);
                 context.startActivity(intent);
             }
         });

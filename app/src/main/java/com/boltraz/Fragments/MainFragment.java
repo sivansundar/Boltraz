@@ -1,6 +1,7 @@
 package com.boltraz.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,14 +12,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.ListAdapters.ClassAnnouncementsListAdapter;
 import com.boltraz.MainActivity;
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -57,7 +65,11 @@ public class MainFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    RecyclerView classAnnouncementsRecyclerView;
+    public RecyclerView classAnnouncementsRecyclerView;
+
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseFirestore mFirebaseFirestoredb;
     @BindView(R.id.logout)
     Button logout;
 
@@ -65,9 +77,14 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private static final String TAG = "Boltraz MainActivity";
+    String userID;
 
-    private ClassAnnouncementsListAdapter classAnnouncementsListAdapter;
-    private List<ClassAnnouncementsModel> classAnnouncementsList;
+
+
+
+    public FirebaseDatabase mDatabase;
+    public DatabaseReference databaseReference;
 
     @Override
     public void onDestroyView() {
@@ -81,12 +98,9 @@ public class MainFragment extends Fragment {
         super.onDestroy();
     }
 
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseFirestore mFirebaseFirestoredb;
 
-    private static final String TAG = "Boltraz MainActivity";
-    String userID;
+
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -125,57 +139,92 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mFirebaseFirestoredb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-
-
-
-
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mDatabase.getReference();
 
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
-
-        classAnnouncementsList = new ArrayList<>();
-        classAnnouncementsListAdapter = new ClassAnnouncementsListAdapter(classAnnouncementsList);
-
         classAnnouncementsRecyclerView.setHasFixedSize(true);
         classAnnouncementsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        classAnnouncementsRecyclerView.setAdapter(classAnnouncementsListAdapter);
-
-        getClassAnnouncemets();
-
 
         return rootView;
     }
 
-    private void getClassAnnouncemets() {
-        mFirebaseFirestoredb.collection("ClassAnouncements6B").addSnapshotListener(new EventListener<QuerySnapshot>() {
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("classAnnouncements")
+                .child("Class6B")
+                .limitToLast(50);
+
+        FirebaseRecyclerOptions<ClassAnnouncementsModel> options =
+                new FirebaseRecyclerOptions.Builder<ClassAnnouncementsModel>()
+                        .setQuery(query, ClassAnnouncementsModel.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<ClassAnnouncementsModel, ClassAnnouncementsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ClassAnnouncementsModel, ClassAnnouncementsViewHolder>(
+                options) {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+            protected void onBindViewHolder(@NonNull ClassAnnouncementsViewHolder classAnnouncementsViewHolder, int i, @NonNull ClassAnnouncementsModel timetableModel) {
 
-                if (e != null) {
-                    Log.e(TAG, "onEvent: getClassAnnouncements : ", e);
-                } else {
-                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                String post_key = timetableModel.getPostID();
 
-                        if (doc.getType() == DocumentChange.Type.ADDED || doc.getType() == DocumentChange.Type.MODIFIED) {
-                            String title = doc.getDocument().getString("Title");
-                            Log.d(TAG, "onEvent: Docs : " + title);
+                classAnnouncementsViewHolder.setTitle(timetableModel.getTitle());
+                classAnnouncementsViewHolder.setDescription(timetableModel.getDesc());
 
+                classAnnouncementsViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), ClassAnnouncementsActivity.class);
+                        intent.putExtra("postID", post_key);
+                        startActivity(intent);
 
-                            ClassAnnouncementsModel classAnouncements = doc.getDocument().toObject(ClassAnnouncementsModel.class);
-                            classAnnouncementsList.add(classAnouncements);
-
-                            classAnnouncementsListAdapter.notifyDataSetChanged();
-                        }
                     }
-
-                }
-
+                });
             }
-        });
+
+            @NonNull
+            @Override
+            public ClassAnnouncementsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.classanoun_list_item, parent, false);
+                return new ClassAnnouncementsViewHolder(view);
+            }
+        };
+
+        classAnnouncementsRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
     }
+
+
+    public static class ClassAnnouncementsViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+        public ClassAnnouncementsViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setTitle(String title) {
+            TextView mTitleText = (TextView) mView.findViewById(R.id.title_txt_list);
+            mTitleText.setText(title);
+        }
+
+
+        public void setDescription(String description) {
+            TextView mDescText = (TextView) mView.findViewById(R.id.description_txt_list);
+            mDescText.setText(description);
+        }
+
+    }
+
+
 
        @OnClick(R.id.logout)
     public void onViewClicked() {
