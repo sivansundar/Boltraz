@@ -1,6 +1,7 @@
 package com.boltraz.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,23 +9,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.ListAdapters.TimetableListAdapter;
+import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +58,6 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    RecyclerView timetableRecyclerView;
 
 
     @BindView(R.id.monday_tab)
@@ -66,9 +77,10 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private String mParam2;
     public String day = "Monday";
 
-    private TimetableListAdapter timetableListAdapter;
-    private List<TimetableModel> timetableList;
-    private FirebaseFirestore mFirebaseFirestoredb;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference databaseReference;
+
+    private RecyclerView timeTableRecyclerView;
     private OnFragmentInteractionListener mListener;
 
     private static final String TAG = "Boltraz TimeTableFragment";
@@ -112,7 +124,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         TabLayout tabLayout;
         tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
 
+        timeTableRecyclerView = (RecyclerView) v.findViewById(R.id.timetable_recyclerView);
+        timeTableRecyclerView.setHasFixedSize(true);
+        timeTableRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        mDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mDatabase.getReference().child("timetable").child("Class6B");
 
         // Sends a firebase query to pull according to day.
 
@@ -123,12 +140,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
                 switch (day) {
                     case "Monday" :
-                       // getTimeTable("Monday");
+                       getTimeTable("Monday");
                         Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
                         break;
 
                     case "Tuesday" :
-                        //getTimeTable("Tuesday");
+                        getTimeTable("Tuesday");
                         break;
 
                     case "Wednesday" :
@@ -162,14 +179,69 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        getTimeTable("Monday");
+    }
 
     private void getTimeTable(String day) {
 
-        timetableList.clear();
+        Query query = databaseReference.child(day);
+
+        FirebaseRecyclerOptions<TimetableModel> options =
+                new FirebaseRecyclerOptions.Builder<TimetableModel>()
+                        .setQuery(query, TimetableModel.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<TimetableModel, TimeTableViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<TimetableModel, TimeTableViewHolder>(
+                options) {
+            @Override
+            protected void onBindViewHolder(@NonNull TimeTableViewHolder timeTableViewHolder, int i, @NonNull TimetableModel timetableModel) {
+
+                timeTableViewHolder.setTitle(timetableModel.getTitle());
+
+
+            }
+
+            @NonNull
+            @Override
+            public TimeTableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.timetable_list_item, parent, false);
+                return new TimeTableViewHolder(view);
+            }
+        };
+
+        timeTableRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
 
         //Implement Firebase Recycler Adapter
 
     }
+
+    public static class TimeTableViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+        public TimeTableViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setTitle(String title) {
+            TextView titleText = (TextView)mView.findViewById(R.id.subjectName_txt);
+            titleText.setText(title);
+        }
+
+
+        public void setDescription(String description) {
+
+        }
+
+    }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

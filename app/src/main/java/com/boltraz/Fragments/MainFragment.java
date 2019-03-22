@@ -157,11 +157,15 @@ public class MainFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        refreshAnnouncements();
+    }
+
+    private void refreshAnnouncements() {
+
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("classAnnouncements")
-                .child("Class6B")
-                .limitToLast(50);
+                .child("Class6B");
 
         FirebaseRecyclerOptions<ClassAnnouncementsModel> options =
                 new FirebaseRecyclerOptions.Builder<ClassAnnouncementsModel>()
