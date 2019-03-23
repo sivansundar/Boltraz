@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.google.android.material.chip.Chip;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,10 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     TextView titleText;
     @BindView(R.id.date_text)
     TextView dateText;
+    @BindView(R.id.desc_text)
+    TextView descText;
+    @BindView(R.id.author_chip)
+    Chip authorChip;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference;
 
@@ -48,6 +53,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 ClassAnnouncementsModel model;
                 model = dataSnapshot.getValue(ClassAnnouncementsModel.class);
                 titleText.setText(model.getTitle());
+                descText.setText(model.getDesc());
+                authorChip.setText(model.getPostAuthor());
+
 
             }
 

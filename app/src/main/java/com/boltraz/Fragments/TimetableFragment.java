@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -201,6 +202,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
             protected void onBindViewHolder(@NonNull TimeTableViewHolder timeTableViewHolder, int i, @NonNull TimetableModel timetableModel) {
 
                 timeTableViewHolder.setTitle(timetableModel.getTitle());
+                timeTableViewHolder.setProf(timetableModel.getProf());
 
 
             }
@@ -235,8 +237,9 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         }
 
 
-        public void setDescription(String description) {
-
+        public void setProf(String prof) {
+            TextView profText = (TextView) mView.findViewById(R.id.profName_txt);
+            profText.setText("Prof. " +prof);
         }
 
     }

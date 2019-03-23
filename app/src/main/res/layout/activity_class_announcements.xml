@@ -28,7 +28,7 @@
                 android:padding="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="120dp">
 
                 <TextView
                     android:id="@+id/title_text"
@@ -56,6 +56,20 @@
                     android:layout_height="wrap_content"
                     android:text="12:40"
                     android:textSize="18sp"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/author_chip"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Author Name"/>
+
+
+
+
+
 
             </RelativeLayout>
 
