@@ -112,6 +112,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.button.MaterialButton
+            android:textColor="#000"
             android:layout_alignParentBottom="true"
             android:text="Create user"
             android:id="@+id/create_user_btn"
