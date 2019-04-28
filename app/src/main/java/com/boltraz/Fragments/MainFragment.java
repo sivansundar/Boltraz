@@ -70,8 +70,7 @@ public class MainFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseFirestore mFirebaseFirestoredb;
-    @BindView(R.id.logout)
-    Button logout;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -230,13 +229,7 @@ public class MainFragment extends Fragment {
 
 
 
-       @OnClick(R.id.logout)
-    public void onViewClicked() {
 
-        mAuth.signOut();
-
-
-    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

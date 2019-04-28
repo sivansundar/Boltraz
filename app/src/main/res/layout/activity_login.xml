@@ -4,63 +4,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:orientation="vertical">
 
         <TextView
-            android:layout_marginTop="100dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
             android:text="B"
             android:textAlignment="center"
             android:textColor="#000"
             android:textSize="104sp" />
 
 
-
         <LinearLayout
-            android:orientation="vertical"
             android:id="@+id/loginHolder"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
 
             <EditText
-                android:hint="Email"
                 android:id="@+id/userIDTxt"
-                android:layout_gravity="center"
                 android:layout_width="250dp"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:hint="Email" />
 
             <EditText
-                android:inputType="textPassword"
                 android:id="@+id/passwordTxt"
-                android:hint="Password"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:hint="Password"
+                android:inputType="textPassword" />
 
             <Button
                 android:id="@+id/Login_btn"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:text="Login"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:text="Login" />
 
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/googleSignInBtn"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                >
-            </com.google.android.gms.common.SignInButton>
+                android:layout_gravity="center"></com.google.android.gms.common.SignInButton>
 
 
         </LinearLayout>
@@ -68,18 +64,18 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/loginHolder2"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/signUp_btn"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Sign UP"/>
+            android:text="Sign UP" />
 
 
     </LinearLayout>

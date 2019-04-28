@@ -17,7 +17,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="#fafafa"
         tools:context=".MainActivity">
 
         <LinearLayout
@@ -30,31 +30,11 @@
 
 
 
-        <RelativeLayout
-            android:layout_alignParentBottom="true"
-            android:id="@+id/dashboard_holder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/logout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Log out" />
-
-
-        </RelativeLayout>
-
-
-
-
-
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_above="@id/footer"
-            android:background="#fff"
+            android:background="#fafafa"
             android:id="@+id/classAnnouncements_RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="400dp" />

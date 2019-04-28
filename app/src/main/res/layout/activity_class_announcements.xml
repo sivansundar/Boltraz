@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="#fafafa"
     tools:context=".ClassAnnouncementsActivity">
 
     <RelativeLayout
@@ -14,7 +14,7 @@
 
         <com.google.android.material.card.MaterialCardView
         android:id="@+id/announ_card"
-        app:cardElevation="5dp"
+        app:cardElevation="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

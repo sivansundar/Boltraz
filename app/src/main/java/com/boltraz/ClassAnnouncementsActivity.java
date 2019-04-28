@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 
 public class ClassAnnouncementsActivity extends AppCompatActivity {
 
-    String post_key;
+    String post_key = "";
     @BindView(R.id.title_text)
     TextView titleText;
     @BindView(R.id.date_text)
@@ -42,11 +42,11 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
 
-        getPostDetails(post_key);
+        getPostDetails();
         Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
     }
 
-    private void getPostDetails(String post_key) {
+    private void getPostDetails() {
         databaseReference.child("Class6B").child(post_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

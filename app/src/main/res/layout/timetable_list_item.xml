@@ -7,11 +7,10 @@
     android:background="@color/colorPrimary">
 
     <LinearLayout
-        android:padding="10dp"
         android:orientation="vertical"
         android:id="@+id/timetable_viewHolder"
         android:layout_width="match_parent"
-        android:layout_height="140dp">
+        android:layout_height="120dp">
 
         <com.google.android.material.card.MaterialCardView
             app:cardElevation="5dp"
