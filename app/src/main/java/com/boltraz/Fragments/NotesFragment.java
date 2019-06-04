@@ -4,15 +4,26 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.SubjectModel;
+import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,8 +43,10 @@ public class NotesFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FirebaseDatabase firebaseDatabase;
+    private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference;
+
+    private RecyclerView subject_recyclerView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -75,11 +88,79 @@ public class NotesFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        subject_recyclerView = (RecyclerView) view.findViewById(R.id.sub_recyclerView);
+        subject_recyclerView.setHasFixedSize(true);
+        subject_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        mDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mDatabase.getReference().child("subjects").child("cse");
+
+
+        getSubjects();
 
         return view;
+    }
+
+    public void getSubjects() {
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("subjects")
+                .child("cse")
+                .child("sem7");
+
+        FirebaseRecyclerOptions<SubjectModel> options =
+                new FirebaseRecyclerOptions.Builder<SubjectModel>()
+                        .setQuery(query, SubjectModel.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<SubjectModel, NotesFragment.SubjectViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<SubjectModel, NotesFragment.SubjectViewHolder>(
+                options) {
+
+            @NonNull
+            @Override
+            public SubjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.sub_list_item, parent, false);
+
+                return new SubjectViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull SubjectViewHolder subjectViewHolder, int i, @NonNull SubjectModel subjectModel) {
+
+
+                subjectViewHolder.setTitle(subjectModel.getTitle());
+                subjectViewHolder.setProf(subjectModel.getProf());
+
+            }
+        };
+
+
+        subject_recyclerView.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
+    }
+
+    public static class SubjectViewHolder extends RecyclerView.ViewHolder {
+        View mView;
+
+        public SubjectViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setTitle(String title) {
+            TextView mTitleText = (TextView) mView.findViewById(R.id.subject_title);
+            mTitleText.setText(title);
+        }
+
+        public void setProf(String prof) {
+            TextView mProfText = (TextView) mView.findViewById(R.id.subject_prof);
+            mProfText.setText(prof);
+        }
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

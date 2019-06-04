@@ -8,45 +8,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.boltraz.ClassAnnouncementsActivity;
-import com.boltraz.ListAdapters.ClassAnnouncementsListAdapter;
-import com.boltraz.MainActivity;
-import com.boltraz.Model.ClassAnnouncementsModel;
-import com.boltraz.Model.TimetableModel;
-import com.boltraz.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.mikhaellopez.circularimageview.CircularImageView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.boltraz.ClassAnnouncementsActivity;
+import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.R;
+import com.bumptech.glide.Glide;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
 import butterknife.BindView;
-import butterknife.OnClick;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +50,8 @@ public class MainFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     public RecyclerView classAnnouncementsRecyclerView;
+    @BindView(R.id.userdp_circleImageView)
+    CircularImageView circleImageView;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -80,15 +66,15 @@ public class MainFragment extends Fragment {
     String userID;
 
 
-
-
     public FirebaseDatabase mDatabase;
     public DatabaseReference databaseReference;
+    private Unbinder mUnbinder;
 
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView: Fragment home view destroyed");
         super.onDestroyView();
+        mUnbinder.unbind();
     }
 
     @Override
@@ -96,9 +82,6 @@ public class MainFragment extends Fragment {
         Log.d(TAG, "onDestroy: Fragment home destroyed");
         super.onDestroy();
     }
-
-
-
 
 
     private OnFragmentInteractionListener mListener;
@@ -145,10 +128,13 @@ public class MainFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
 
+
+
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
         classAnnouncementsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        mUnbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
@@ -157,6 +143,15 @@ public class MainFragment extends Fragment {
         super.onStart();
 
         refreshAnnouncements();
+
+        getDP();
+    }
+
+    private void getDP() {
+
+        Uri url = mAuth.getCurrentUser().getPhotoUrl();
+        Glide.with(getContext()).load(url).into(circleImageView);
+
     }
 
     private void refreshAnnouncements() {
@@ -209,6 +204,7 @@ public class MainFragment extends Fragment {
 
     public static class ClassAnnouncementsViewHolder extends RecyclerView.ViewHolder {
         View mView;
+
         public ClassAnnouncementsViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
@@ -226,8 +222,6 @@ public class MainFragment extends Fragment {
         }
 
     }
-
-
 
 
     // TODO: Rename method, update argument and hook method into UI event

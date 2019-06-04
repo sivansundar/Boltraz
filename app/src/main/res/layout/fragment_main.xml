@@ -20,6 +20,39 @@
         android:background="#fafafa"
         tools:context=".MainActivity">
 
+
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:id="@+id/header"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                app:strokeColor="#808080"
+                app:strokeWidth="1dp"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="10dp"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.mikhaellopez.circularimageview.CircularImageView
+                        android:id="@+id/userdp_circleImageView"
+                        android:layout_margin="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/footer"
             android:orientation="horizontal"

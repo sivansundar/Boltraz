@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.boltraz.ClassAnnouncementsActivity;
-import com.boltraz.ListAdapters.TimetableListAdapter;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
@@ -203,6 +202,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
                 timeTableViewHolder.setTitle(timetableModel.getTitle());
                 timeTableViewHolder.setProf(timetableModel.getProf());
+                timeTableViewHolder.setHour(i);
+                Log.d(TAG, "onClick: position value " + i);
 
 
             }
@@ -213,6 +214,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.timetable_list_item, parent, false);
+
+
                 return new TimeTableViewHolder(view);
             }
         };
@@ -229,6 +232,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         public TimeTableViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
+
+            mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            });
         }
 
         public void setTitle(String title) {
@@ -240,6 +249,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         public void setProf(String prof) {
             TextView profText = (TextView) mView.findViewById(R.id.profName_txt);
             profText.setText("Prof. " +prof);
+        }
+
+        public void setHour(int hour) {
+            hour++;
+            TextView houtText = (TextView) mView.findViewById(R.id.hour_txt);
+            houtText.setText("" + hour);
         }
 
     }
