@@ -1,6 +1,7 @@
 package com.boltraz.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,7 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.SubjectModel;
@@ -21,9 +24,15 @@ import com.boltraz.Model.TimetableModel;
 import com.boltraz.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +55,9 @@ public class NotesFragment extends Fragment {
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference;
 
+
     private RecyclerView subject_recyclerView;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -88,13 +99,15 @@ public class NotesFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
 
+
         subject_recyclerView = (RecyclerView) view.findViewById(R.id.sub_recyclerView);
         subject_recyclerView.setHasFixedSize(true);
         subject_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
+
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("subjects").child("cse");
-
 
         getSubjects();
 
@@ -124,6 +137,7 @@ public class NotesFragment extends Fragment {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.sub_list_item, parent, false);
 
+
                 return new SubjectViewHolder(view);
             }
 
@@ -132,10 +146,22 @@ public class NotesFragment extends Fragment {
 
 
                 subjectViewHolder.setTitle(subjectModel.getTitle());
-                subjectViewHolder.setProf(subjectModel.getProf());
+                subjectViewHolder.setCcode(subjectModel.getCcode());
+
+                subjectViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+
+                    }
+                });
+
+
 
             }
         };
+
 
 
         subject_recyclerView.setAdapter(firebaseRecyclerAdapter);
@@ -155,9 +181,11 @@ public class NotesFragment extends Fragment {
             mTitleText.setText(title);
         }
 
-        public void setProf(String prof) {
-            TextView mProfText = (TextView) mView.findViewById(R.id.subject_prof);
-            mProfText.setText(prof);
+
+
+        public void setCcode(String cCode) {
+            TextView mProfText = (TextView) mView.findViewById(R.id.subject_cCode);
+            mProfText.setText(cCode);
         }
 
 

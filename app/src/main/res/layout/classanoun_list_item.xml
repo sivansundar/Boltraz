@@ -8,6 +8,7 @@
     <com.google.android.material.card.MaterialCardView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardCornerRadius="2dp"
+        app:cardBackgroundColor="#000"
         app:cardElevation="2dp"
         android:id="@+id/announ_card"
         android:layout_width="match_parent"
@@ -21,7 +22,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textColor="#000"
+                android:textColor="#fff"
                 android:id="@+id/title_txt_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,6 +30,7 @@
                 android:textSize="20sp" />
 
             <TextView
+                android:textColor="#fafafa"
                 android:id="@+id/description_txt_list"
                 android:layout_width="match_parent"
                 android:layout_height="18dp"

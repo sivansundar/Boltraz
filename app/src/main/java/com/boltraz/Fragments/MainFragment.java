@@ -52,6 +52,8 @@ public class MainFragment extends Fragment {
     public RecyclerView classAnnouncementsRecyclerView;
     @BindView(R.id.userdp_circleImageView)
     CircularImageView circleImageView;
+    @BindView(R.id.name_label)
+    TextView Labelname;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -129,7 +131,6 @@ public class MainFragment extends Fragment {
         databaseReference = mDatabase.getReference();
 
 
-
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
         classAnnouncementsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -151,6 +152,10 @@ public class MainFragment extends Fragment {
 
         Uri url = mAuth.getCurrentUser().getPhotoUrl();
         Glide.with(getContext()).load(url).into(circleImageView);
+
+        String name = mAuth.getCurrentUser().getDisplayName();
+        Labelname.setText(name);
+
 
     }
 

@@ -19,8 +19,10 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             app:tabGravity="center"
+            android:background="#121212"
             app:tabRippleColor="@color/colorPrimaryDark"
             app:tabMode="scrollable"
+            app:tabTextColor="#80a80a"
             android:padding="10dp"
             android:scrollbars="horizontal"
             android:layout_width="match_parent"
@@ -36,7 +38,7 @@
                 android:id="@+id/tuesday_tab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tuesday"/>
+                android:text="Tuesday" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/wednesday_tab"
@@ -64,6 +66,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:layout_below="@id/tab_layout"
             android:id="@+id/timetable_recyclerView"
+            android:background="#121212"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="30dp">

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fafafa"
+    android:background="#121212"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -27,9 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:background="#fff"
-        app:itemIconTint="#000"
-        app:itemTextColor="#000"
+        android:background="#000"
+        app:itemIconTint="#FFF"
+        app:itemTextColor="#FFF"
         app:menu="@menu/menu" />
 
 </RelativeLayout>

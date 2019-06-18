@@ -25,15 +25,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -164,11 +159,13 @@ public class LoginActivity extends AppCompatActivity {
 
                             //Takes snapshot of all the documents
 
+
                             Map<String, Object> studentDetails = new HashMap<>();
                             studentDetails.put("Name", task.getResult().getUser().getDisplayName());
                             studentDetails.put("Email", task.getResult().getUser().getEmail());
                             studentDetails.put("UID", task.getResult().getUser().getUid());
                             studentDetails.put("Semester", 6);
+                            studentDetails.put("token_id", "empty");
 
                             String uid = task.getResult().getUser().getUid();
 
@@ -176,6 +173,40 @@ public class LoginActivity extends AppCompatActivity {
                                @Override
                                public void onSuccess(Void aVoid) {
                                    Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+
+
+                                   mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+                                       @Override
+                                       public void onSuccess(GetTokenResult getTokenResult) {
+                                          String token_id = getTokenResult.getToken();
+
+                                          Map<String, Object> tokenMap = new HashMap<>();
+                                          tokenMap.put("token_id", token_id);
+                                          
+                                          mDatabaseReference.child("students").child("semester6").child(uid).updateChildren(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                              @Override
+                                              public void onSuccess(Void aVoid) {
+                                                  Toast.makeText(LoginActivity.this, "Token updated", Toast.LENGTH_SHORT).show();
+                                              }
+                                          })
+                                                  
+                                                  .addOnFailureListener(new OnFailureListener() {
+                                                      @Override
+                                                      public void onFailure(@NonNull Exception e) {
+                                                          Toast.makeText(LoginActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
+                                                      }
+                                                  });
+
+                                       }
+                                   })
+
+                                           .addOnFailureListener(new OnFailureListener() {
+                                               @Override
+                                               public void onFailure(@NonNull Exception e) {
+
+                                               }
+                                           });
+
                                }
                            })
                                    .addOnFailureListener(new OnFailureListener() {

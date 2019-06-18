@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -127,6 +128,9 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         timeTableRecyclerView = (RecyclerView) v.findViewById(R.id.timetable_recyclerView);
         timeTableRecyclerView.setHasFixedSize(true);
         timeTableRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL);
+        //timeTableRecyclerView.addItemDecoration(itemDecor);
 
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("timetable").child("Class6B");

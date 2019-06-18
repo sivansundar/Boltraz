@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#121212"
     android:layout_height="match_parent"
     tools:context=".Fragments.MainFragment">
 
@@ -17,29 +18,40 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#fafafa"
+        android:background="#121212"
         tools:context=".MainActivity">
 
 
         <LinearLayout
-            android:layout_margin="10dp"
+            android:layout_margin="18dp"
             android:id="@+id/header"
             android:orientation="horizontal"
             android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="56dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                app:strokeColor="#808080"
-                app:strokeWidth="1dp"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="10dp"
-                >
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/hello_label"
+                        android:textColor="#ffff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Hello,"/>
+
+
+                    <TextView
+                        android:layout_below="@id/hello_label"
+                        android:id="@+id/name_label"
+                        android:textColor="#ffff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:text="Sivan Chakravarthy Sundaravadivelu"/>
 
                     <com.mikhaellopez.circularimageview.CircularImageView
                         android:id="@+id/userdp_circleImageView"
@@ -49,28 +61,116 @@
                         android:layout_height="40dp" />
 
                 </RelativeLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_above="@id/classAnnouncements_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="230dp"
+                app:cardBackgroundColor="#03DAC6"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:id="@+id/toDoNumber_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="120sp"
+                        android:textColor="#fff"
+                        android:text="0"/>
+
+                    <TextView
+                        android:textSize="24sp"
+                        android:textColor="#fff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="To-do items"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="10dp"
+                        android:background="#fafafa" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="230dp"
+                app:cardBackgroundColor="#c60055"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="8dp">
+
+                <LinearLayout
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:layout_gravity=""
+                        android:id="@+id/l"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="120sp"
+                        android:textColor="#fff"
+                        android:text="0"/>
+
+                    <TextView
+                        android:textSize="24sp"
+                        android:textColor="#fff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="To-do items"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="10dp"
+                        android:background="#fafafa" />
+
+                </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_above="@id/footer"
+            android:background="#000"
+            android:id="@+id/classAnnouncements_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
+
 
         <LinearLayout
             android:id="@+id/footer"
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="56dp"></LinearLayout>
+            android:layout_height="40dp"></LinearLayout>
 
-
-
-
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_above="@id/footer"
-            android:background="#fafafa"
-            android:id="@+id/classAnnouncements_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="400dp" />
 
 
 
