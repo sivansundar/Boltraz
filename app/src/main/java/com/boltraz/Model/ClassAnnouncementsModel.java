@@ -7,7 +7,7 @@ public class ClassAnnouncementsModel {
     private String title;
     private String desc;
     private String postID;
-    private String postAuthor;
+    private String author;
 
 
     public ClassAnnouncementsModel() {
@@ -22,17 +22,20 @@ public class ClassAnnouncementsModel {
         this.postID = postID;
     }
 
-    public String getPostAuthor() {
-        return postAuthor;
+    public String getauthor() {
+        return author;
     }
 
-    public void setPostAuthor(String postAuthor) {
-        this.postAuthor = postAuthor;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
-    public ClassAnnouncementsModel(String title, String desc) {
+
+    public ClassAnnouncementsModel(String title, String desc, String postID, String author) {
         this.title = title;
         this.desc = desc;
+        this.postID = postID;
+        this.author = author;
     }
 
     public String getTitle() {

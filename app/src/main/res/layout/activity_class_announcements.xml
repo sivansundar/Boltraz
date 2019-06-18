@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fafafa"
+    android:background="#121212"
     tools:context=".ClassAnnouncementsActivity">
 
     <RelativeLayout
-        android:padding="10dp"
+        android:padding="15dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.google.android.material.card.MaterialCardView
         android:id="@+id/announ_card"
-        app:cardElevation="8dp"
+        app:cardElevation="8dp" app:cardBackgroundColor="#000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -32,7 +32,7 @@
 
                 <TextView
                     android:id="@+id/title_text"
-                    android:textColor="#000"
+                    android:textColor="#fff"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Title"
@@ -41,6 +41,7 @@
                 <TextView
                     android:layout_marginTop="20dp"
                     android:id="@+id/date_text"
+                    android:textColor="#fff"
                     android:layout_below="@id/title_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -51,7 +52,7 @@
                 <TextView
                     android:layout_alignParentRight="true"
                     android:layout_below="@id/title_text"
-                    android:textColor="#000"
+                    android:textColor="#fff"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12:40"
@@ -81,7 +82,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:textColor="#000"
+                    android:textColor="#fff"
                     android:padding="10dp"
                     android:textAlignment="gravity"
                     android:lineSpacingExtra="10dp"

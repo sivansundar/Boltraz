@@ -54,7 +54,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 model = dataSnapshot.getValue(ClassAnnouncementsModel.class);
                 titleText.setText(model.getTitle());
                 descText.setText(model.getDesc());
-                authorChip.setText(model.getPostAuthor());
+                authorChip.setText(model.getauthor()    );
 
 
             }
