@@ -22,9 +22,12 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -54,6 +57,8 @@ public class MainFragment extends Fragment {
     CircularImageView circleImageView;
     @BindView(R.id.name_label)
     TextView Labelname;
+    @BindView(R.id.toDoNumber_label)
+    TextView todoNumber_label;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -66,6 +71,8 @@ public class MainFragment extends Fragment {
 
     private static final String TAG = "Boltraz MainActivity";
     String userID;
+
+    int todoSize;
 
 
     public FirebaseDatabase mDatabase;
@@ -130,12 +137,17 @@ public class MainFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
 
-
+        userID = mAuth.getUid();
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
         classAnnouncementsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        todoNumber_label = rootView.findViewById(R.id.toDoNumber_label);
+
         mUnbinder = ButterKnife.bind(this, rootView);
+
+
+
         return rootView;
     }
 
@@ -144,8 +156,28 @@ public class MainFragment extends Fragment {
         super.onStart();
 
         refreshAnnouncements();
+        getToDoCount();
 
         getDP();
+
+    }
+
+    private void getToDoCount() {
+
+        databaseReference.child("students/semester7/").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                todoSize  = (int) dataSnapshot.getChildrenCount();
+                todoNumber_label.setText("" + todoSize);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void getDP() {
