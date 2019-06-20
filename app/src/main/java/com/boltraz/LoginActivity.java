@@ -164,12 +164,13 @@ public class LoginActivity extends AppCompatActivity {
                             studentDetails.put("Name", task.getResult().getUser().getDisplayName());
                             studentDetails.put("Email", task.getResult().getUser().getEmail());
                             studentDetails.put("UID", task.getResult().getUser().getUid());
-                            studentDetails.put("Semester", 6);
+                            studentDetails.put("Semester", 7);
+                            studentDetails.put("Class", "7A");
                             studentDetails.put("token_id", "empty");
 
                             String uid = task.getResult().getUser().getUid();
 
-                           mDatabaseReference.child("students").child("semester6").child(uid).setValue(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                           mDatabaseReference.child("students").child("semester7").child(uid).setValue(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                @Override
                                public void onSuccess(Void aVoid) {
                                    Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
@@ -183,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                                           Map<String, Object> tokenMap = new HashMap<>();
                                           tokenMap.put("token_id", token_id);
                                           
-                                          mDatabaseReference.child("students").child("semester6").child(uid).updateChildren(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                          mDatabaseReference.child("students").child("semester7").child(uid).updateChildren(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                               @Override
                                               public void onSuccess(Void aVoid) {
                                                   Toast.makeText(LoginActivity.this, "Token updated", Toast.LENGTH_SHORT).show();

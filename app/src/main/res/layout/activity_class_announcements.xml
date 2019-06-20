@@ -16,7 +16,7 @@
         android:id="@+id/announ_card"
         app:cardElevation="8dp" app:cardBackgroundColor="#000"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:padding="5dp"
@@ -32,10 +32,11 @@
 
                 <TextView
                     android:id="@+id/title_text"
-                    android:textColor="#fff"
+                    android:textColor="#ffc4ff"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Title"
+                    android:textStyle="bold"
                     android:textSize="24sp"/>
 
                 <TextView
@@ -77,12 +78,13 @@
 
 
             <ScrollView
-                android:layout_marginTop="250dp"
+                android:id="@+id/content_scroll"
+                android:layout_marginTop="200dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="500dp">
 
                 <TextView
-                    android:textColor="#fff"
+                    android:textColor="#eeeeee"
                     android:padding="10dp"
                     android:textAlignment="gravity"
                     android:lineSpacingExtra="10dp"
@@ -95,6 +97,14 @@
 
 
             </ScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/round_add_alert_black_48"
+            android:layout_margin="20dp"/>
 
         </RelativeLayout>
 

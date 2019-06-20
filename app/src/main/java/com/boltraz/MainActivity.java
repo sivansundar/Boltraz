@@ -15,8 +15,10 @@ import com.boltraz.Fragments.MainFragment;
 import com.boltraz.Fragments.NotesFragment;
 import com.boltraz.Fragments.TimetableFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
         setFragment(mainFragment);
 
+        startListeningNotifications();
+
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -91,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         });
 
 
+    }
+
+    private void startListeningNotifications() {
+
+        FirebaseApp.initializeApp(this);
+        FirebaseMessaging.getInstance().subscribeToTopic("Class7A_Announcements");
     }
 
     private void setFragment(Fragment fragment) {

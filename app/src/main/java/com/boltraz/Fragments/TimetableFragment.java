@@ -133,7 +133,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         //timeTableRecyclerView.addItemDecoration(itemDecor);
 
         mDatabase = FirebaseDatabase.getInstance();
-        databaseReference = mDatabase.getReference().child("timetable").child("Class6B");
+        databaseReference = mDatabase.getReference().child("timetable").child("Class7A");
 
         // Sends a firebase query to pull according to day.
 

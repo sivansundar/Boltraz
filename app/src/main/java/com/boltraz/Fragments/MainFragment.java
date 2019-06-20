@@ -164,7 +164,7 @@ public class MainFragment extends Fragment {
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("classAnnouncements")
-                .child("Class6B");
+                .child("Class7A");
 
         FirebaseRecyclerOptions<ClassAnnouncementsModel> options =
                 new FirebaseRecyclerOptions.Builder<ClassAnnouncementsModel>()
