@@ -146,6 +146,7 @@ public class MainFragment extends Fragment {
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
+        todoNumber_label.setText("" + todoSize);
 
 
         return rootView;
