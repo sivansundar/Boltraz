@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             //Takes snapshot of all the documents
 
+                            //For final production, update only UID since we will have the user sign up data from a google sheet imported directly via a python script
 
                             Map<String, Object> studentDetails = new HashMap<>();
                             studentDetails.put("Name", task.getResult().getUser().getDisplayName());
@@ -166,11 +167,13 @@ public class LoginActivity extends AppCompatActivity {
                             studentDetails.put("UID", task.getResult().getUser().getUid());
                             studentDetails.put("Semester", 7);
                             studentDetails.put("Class", "7A");
+                            studentDetails.put("classrep", "no");
+                            studentDetails.put("USN", "1NH16CS094");
                             studentDetails.put("token_id", "empty");
 
                             String uid = task.getResult().getUser().getUid();
 
-                           mDatabaseReference.child("students").child("semester7").child(uid).setValue(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            mDatabaseReference.child("students").child("semester7").child(uid).updateChildren(studentDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                                @Override
                                public void onSuccess(Void aVoid) {
                                    Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();

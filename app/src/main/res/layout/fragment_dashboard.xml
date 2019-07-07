@@ -20,14 +20,14 @@
             android:layout_centerHorizontal="true"
             app:cardElevation="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <RelativeLayout
 
                 android:padding="20dp"
                 android:id="@+id/dashboard_holder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
 
                 <com.mikhaellopez.circularimageview.CircularImageView
@@ -64,6 +64,12 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logout_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="Logout" />
 
     </RelativeLayout>
 

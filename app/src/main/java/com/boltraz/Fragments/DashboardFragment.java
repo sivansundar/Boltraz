@@ -1,12 +1,15 @@
 package com.boltraz.Fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -45,8 +49,8 @@ public class DashboardFragment extends Fragment {
     @BindView(R.id.profile_name)
     TextView profileName;
     public static final String TAG = "Dashboard Fragment";
- /*   @BindView(R.id.logout_btn)
-    Button logout_btn;*/
+    @BindView(R.id.logout_btn)
+    Button logout_btn;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -112,13 +116,13 @@ public class DashboardFragment extends Fragment {
 
         usn_text = (TextView) view.findViewById(R.id.usn_text);
         profileName.setText("" + userName);
-        usn_text.setText(usn);
+        usn_text.setText("" + usn);
 
         mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
-   /* @OnClick(R.id.logout_btn)
+    @OnClick(R.id.logout_btn)
     public void onLogout_btnClicked() {
         //TODO: add click handling
 
@@ -134,7 +138,9 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-    }*/
+        alertDialogBuilder.show();
+
+    }
 
     @Override
     public void onStart() {
