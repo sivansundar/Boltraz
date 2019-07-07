@@ -2,13 +2,14 @@ package com.boltraz;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -47,10 +48,9 @@ public class LoginActivity extends AppCompatActivity {
     EditText userIDTxt;
     @BindView(R.id.passwordTxt)
     EditText passwordTxt;
-    @BindView(R.id.Login_btn)
-    Button LoginBtn;
-    @BindView(R.id.signUp_btn)
-    Button signUpBtn;
+    @BindView(R.id.loginButton)
+    Button loginBtn;
+
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -176,38 +176,7 @@ public class LoginActivity extends AppCompatActivity {
                                    Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
 
-                                   mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-                                       @Override
-                                       public void onSuccess(GetTokenResult getTokenResult) {
-                                          String token_id = getTokenResult.getToken();
-
-                                          Map<String, Object> tokenMap = new HashMap<>();
-                                          tokenMap.put("token_id", token_id);
-                                          
-                                          mDatabaseReference.child("students").child("semester7").child(uid).updateChildren(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                              @Override
-                                              public void onSuccess(Void aVoid) {
-                                                  Toast.makeText(LoginActivity.this, "Token updated", Toast.LENGTH_SHORT).show();
-                                              }
-                                          })
-                                                  
-                                                  .addOnFailureListener(new OnFailureListener() {
-                                                      @Override
-                                                      public void onFailure(@NonNull Exception e) {
-                                                          Toast.makeText(LoginActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
-                                                      }
-                                                  });
-
-                                       }
-                                   })
-
-                                           .addOnFailureListener(new OnFailureListener() {
-                                               @Override
-                                               public void onFailure(@NonNull Exception e) {
-
-                                               }
-                                           });
-
+                                   getTokenAndUpdate(uid);
                                }
                            })
                                    .addOnFailureListener(new OnFailureListener() {
@@ -217,14 +186,6 @@ public class LoginActivity extends AppCompatActivity {
                                            Log.e(TAG, "onFailure: ", e);
                                        }
                                    });
-
-
-                          
-
-                            // Create dialog to enter details like sem etc. Then feed it to cloud firestore
-
-
-
 
 
                         } else {
@@ -239,25 +200,57 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    private void getTokenAndUpdate(String userID) {
+
+        mAuth.getCurrentUser().getIdToken(true).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+            @Override
+            public void onSuccess(GetTokenResult getTokenResult) {
+                String token_id = getTokenResult.getToken();
+
+                Map<String, Object> tokenMap = new HashMap<>();
+                tokenMap.put("token_id", token_id);
+
+                mDatabaseReference.child("students").child("semester7").child(userID).updateChildren(tokenMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(LoginActivity.this, "Token updated", Toast.LENGTH_SHORT).show();
+                    }
+                })
+
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(LoginActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+        })
+
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+    }
 
 
-    @OnClick({R.id.Login_btn, R.id.signUp_btn})
+    @OnClick({R.id.loginButton})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.Login_btn:
+            case R.id.loginButton:
 
                 emailLogin();
 
                 break;
-            case R.id.signUp_btn:
 
-                startActivity(new Intent(LoginActivity.this, CreateUserActivity.class));
-                break;
         }
     }
 
     private void emailLogin() {
-         userEmail = userIDTxt.getText().toString();
+        userEmail = userIDTxt.getText().toString() + "@gmail.com";
          password = passwordTxt.getText().toString();
 
         mAuth.signInWithEmailAndPassword(userEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -268,6 +261,7 @@ public class LoginActivity extends AppCompatActivity {
                  //   getLoginDocument();
 
                     Log.d(TAG, "onComplete:Logged in successfully by " + userEmail);
+                    getTokenAndUpdate(mAuth.getUid());
                     Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));

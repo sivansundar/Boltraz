@@ -55,6 +55,7 @@
 
                     <com.mikhaellopez.circularimageview.CircularImageView
                         android:id="@+id/userdp_circleImageView"
+                        android:src="@drawable/baseline_account_circle_black_36"
                         android:layout_margin="10dp"
                         android:layout_alignParentRight="true"
                         android:layout_width="40dp"
@@ -72,6 +73,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/todoList_holder"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="230dp"
@@ -114,6 +116,7 @@
 
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/assignments_holder"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="230dp"
@@ -142,7 +145,7 @@
                         android:textColor="#fff"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="To-do items"/>
+                        android:text="Assignments" />
 
                     <View
                         android:layout_width="match_parent"
@@ -163,6 +166,15 @@
             android:layout_width="match_parent"
             android:layout_height="400dp" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addAnnouncement_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/footer"
+            android:layout_alignParentRight="true"
+            android:layout_margin="20dp"
+            android:src="@drawable/round_add_alert_black_36"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:id="@+id/footer"

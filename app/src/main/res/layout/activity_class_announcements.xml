@@ -77,12 +77,25 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/img_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_holder">
+
+                <ImageView
+                    android:id="@+id/post_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/round_account_circle_black_36" />
+
+            </RelativeLayout>
 
             <ScrollView
+                android:layout_height="wrap_content"
                 android:id="@+id/content_scroll"
-                android:layout_marginTop="200dp"
                 android:layout_width="match_parent"
-                android:layout_height="500dp">
+                android:layout_below="@+id/img_holder">
 
                 <TextView
                     android:textColor="#eeeeee"

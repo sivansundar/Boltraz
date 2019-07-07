@@ -17,7 +17,6 @@ import com.boltraz.Fragments.TimetableFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import butterknife.BindView;
@@ -36,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseFirestore mFirebaseFirestoredb;
 
 
     private FragmentTransaction fragmentTransaction;
@@ -124,7 +122,11 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     protected void onStart() {
         super.onStart();
 
+        getUserDetails();
 
+    }
+
+    private void getUserDetails() {
     }
 
 

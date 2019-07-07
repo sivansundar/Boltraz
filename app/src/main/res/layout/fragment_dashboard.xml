@@ -19,18 +19,18 @@
             app:cardBackgroundColor="#1F1B24 "
             android:layout_centerHorizontal="true"
             app:cardElevation="5dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <RelativeLayout
+
                 android:padding="20dp"
                 android:id="@+id/dashboard_holder"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
 
                 <com.mikhaellopez.circularimageview.CircularImageView
-                    android:layout_centerHorizontal="true"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:src="@drawable/googleg_standard_color_18"
@@ -52,6 +52,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/usn_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/profile_name"
@@ -62,10 +63,6 @@
 
 
         </com.google.android.material.card.MaterialCardView>
-
-
-
-
 
 
     </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.boltraz.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -17,10 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.UserModel;
 import com.boltraz.R;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,11 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -55,24 +59,26 @@ public class MainFragment extends Fragment {
     public RecyclerView classAnnouncementsRecyclerView;
     @BindView(R.id.userdp_circleImageView)
     CircularImageView circleImageView;
-    @BindView(R.id.name_label)
-    TextView Labelname;
+    public UserModel user;
     @BindView(R.id.toDoNumber_label)
     TextView todoNumber_label;
+    @BindView(R.id.name_label)
+    TextView labelName;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseFirestore mFirebaseFirestoredb;
-
-
+    @BindView(R.id.addAnnouncement_fab)
+    FloatingActionButton addAnnouncement_fab;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private static final String TAG = "Boltraz MainActivity";
     String userID;
+    String name = "";
 
-    int todoSize;
+
+    int todoSize = 0;
 
 
     public FirebaseDatabase mDatabase;
@@ -132,7 +138,6 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mFirebaseFirestoredb = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
@@ -147,6 +152,8 @@ public class MainFragment extends Fragment {
         mUnbinder = ButterKnife.bind(this, rootView);
 
         todoNumber_label.setText("" + todoSize);
+        labelName.setText("" + name);
+
 
 
         return rootView;
@@ -161,6 +168,28 @@ public class MainFragment extends Fragment {
 
         getDP();
 
+        databaseReference.child("students/semester7/").child(userID).addValueEventListener(new ValueEventListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserModel userModel = dataSnapshot.getValue(UserModel.class);
+
+                String classrep = userModel.getClassrep();
+
+                Log.d(TAG, "onDataChange: " + classrep);
+                if (classrep.equalsIgnoreCase("yes")) {
+                    addAnnouncement_fab.setVisibility(View.VISIBLE);
+                } else {
+                    addAnnouncement_fab.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void getToDoCount() {
@@ -168,9 +197,11 @@ public class MainFragment extends Fragment {
         databaseReference.child("students/semester7/").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todoSize  = (int) dataSnapshot.getChildrenCount();
-                todoNumber_label.setText("" + todoSize);
+                todoSize = (int) dataSnapshot.getChildrenCount();
 
+                if (todoSize > 0) {
+                    todoNumber_label.setText("" + todoSize);
+                }
             }
 
             @Override
@@ -186,8 +217,28 @@ public class MainFragment extends Fragment {
         Uri url = mAuth.getCurrentUser().getPhotoUrl();
         Glide.with(getContext()).load(url).into(circleImageView);
 
-        String name = mAuth.getCurrentUser().getDisplayName();
-        Labelname.setText(name);
+        if (name.isEmpty()) {
+            databaseReference.child("students/semester7/").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    user = dataSnapshot.getValue(UserModel.class);
+
+
+                    //Toast.makeText(getContext(), "Class rep : " + classrep, Toast.LENGTH_SHORT).show();
+                    name = user.getName();
+                    labelName.setText(name);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    Toast.makeText(getContext(), "We have a problem! Check the log", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "onCancelled: getDP() : ", databaseError.toException());
+                }
+            });
+        }
+
 
 
     }
@@ -204,7 +255,8 @@ public class MainFragment extends Fragment {
                         .setQuery(query, ClassAnnouncementsModel.class)
                         .build();
 
-        FirebaseRecyclerAdapter<ClassAnnouncementsModel, ClassAnnouncementsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ClassAnnouncementsModel, ClassAnnouncementsViewHolder>(
+        FirebaseRecyclerAdapter<ClassAnnouncementsModel, ClassAnnouncementsViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter
+                <ClassAnnouncementsModel, ClassAnnouncementsViewHolder>(
                 options) {
             @Override
             protected void onBindViewHolder(@NonNull ClassAnnouncementsViewHolder classAnnouncementsViewHolder, int i, @NonNull ClassAnnouncementsModel timetableModel) {
@@ -237,6 +289,13 @@ public class MainFragment extends Fragment {
 
         classAnnouncementsRecyclerView.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+    }
+
+    @OnClick(R.id.addAnnouncement_fab)
+    public void onAddAnnouncement_fabClicked() {
+        //TODO: add click handling
+
+
     }
 
 
@@ -304,4 +363,6 @@ public class MainFragment extends Fragment {
     public void setInteractionListener(OnFragmentInteractionListener mListener) {
         this.mListener = mListener;
     }
+
+
 }

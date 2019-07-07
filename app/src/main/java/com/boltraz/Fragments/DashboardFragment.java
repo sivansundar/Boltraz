@@ -3,19 +3,29 @@ package com.boltraz.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.boltraz.Model.UserModel;
 import com.boltraz.R;
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,14 +44,25 @@ public class DashboardFragment extends Fragment {
     CircularImageView profilePictureImg;
     @BindView(R.id.profile_name)
     TextView profileName;
+    public static final String TAG = "Dashboard Fragment";
+ /*   @BindView(R.id.logout_btn)
+    Button logout_btn;*/
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private FirebaseAuth mAuth;
+    public String UID = "";
+    public String userName = "";
+    public String usn = "";
+    @BindView(R.id.usn_text)
+    TextView usn_text;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     private OnFragmentInteractionListener mListener;
+    private Unbinder mUnbinder;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -83,20 +104,69 @@ public class DashboardFragment extends Fragment {
         profileName = view.findViewById(R.id.profile_name);
 
         mAuth = FirebaseAuth.getInstance();
+        if (UID.isEmpty()) {
+            UID = mAuth.getUid();
+        }
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
 
+        usn_text = (TextView) view.findViewById(R.id.usn_text);
+        profileName.setText("" + userName);
+        usn_text.setText(usn);
 
+        mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
+
+   /* @OnClick(R.id.logout_btn)
+    public void onLogout_btnClicked() {
+        //TODO: add click handling
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setTitle("Logout?");
+        alertDialogBuilder.setMessage("Are you sure you want to log out of Boltraz?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mAuth.signOut();
+
+            }
+        });
+
+    }*/
 
     @Override
     public void onStart() {
         super.onStart();
 
 
-        Uri url = mAuth.getCurrentUser().getPhotoUrl();
-        Glide.with(getContext()).load(url).into(profilePictureImg);
-        profileName.setText("Hello, " + mAuth.getCurrentUser().getDisplayName());
+        //Uri url = mAuth.getCurrentUser().getPhotoUrl();
+        //Glide.with(getContext()).load(url).into(profilePictureImg);
 
+        if (userName.isEmpty()) {
+            databaseReference.child("students/semester7/").child(UID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    UserModel user = dataSnapshot.getValue(UserModel.class);
+                    usn = user.getUSN();
+                    userName = user.getName();
+
+                    profileName.setText(userName);
+                    usn_text.setText(usn);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    Toast.makeText(getContext(), "We have a problem! Check the log", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "onCancelled: onStart() : ", databaseError.toException());
+                }
+            });
+
+        }
 
     }
 
@@ -123,6 +193,14 @@ public class DashboardFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnbinder.unbind();
+    }
+
+
 
     /**
      * This interface must be implemented by activities that contain this
