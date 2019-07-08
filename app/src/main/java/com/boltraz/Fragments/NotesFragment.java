@@ -1,6 +1,7 @@
 package com.boltraz.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.boltraz.Model.SubjectModel;
 import com.boltraz.R;
+import com.boltraz.SubjectActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
@@ -138,6 +140,7 @@ public class NotesFragment extends Fragment {
           @Override
           public void onClick(View v) {
 
+            startActivity(new Intent(getActivity(), SubjectActivity.class));
 
           }
         });
@@ -192,6 +195,7 @@ public class NotesFragment extends Fragment {
 
   public static class SubjectViewHolder extends RecyclerView.ViewHolder {
     View mView;
+
 
     public SubjectViewHolder(View itemView) {
       super(itemView);

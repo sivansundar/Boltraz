@@ -49,7 +49,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     ImageView post_imageView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
-    String UID;
+    String UID, imgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
         UID = FirebaseAuth.getInstance().getUid();
 
+
     }
 
     private void getPostDetails() {
@@ -76,7 +77,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ClassAnnouncementsModel model;
                 model = dataSnapshot.getValue(ClassAnnouncementsModel.class);
-                String imgUrl = model.getImgUrl();
+                imgUrl = model.getImgUrl();
 
                 Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
 
@@ -94,6 +95,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @OnClick(R.id.addAlert_fab)
     public void onFabaddAlertClicked() {
@@ -122,6 +124,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 todoMap.put("title", todo_title);
                 todoMap.put("desc", todo_desc);
                 todoMap.put("author", todo_author);
+                todoMap.put("imgUrl", imgUrl);
 
                 todoReference.child("semester7").child(UID).child("todos").child(key).setValue(todoMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
