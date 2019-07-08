@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -43,6 +45,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     Chip authorChip;
     @BindView(R.id.addAlert_fab)
     FloatingActionButton FabaddAlert;
+    @BindView(R.id.imageView)
+    ImageView post_imageView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
     String UID;
@@ -57,6 +61,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
         todoReference = mDatabase.getReference().child("students");
+
+        post_imageView = findViewById(R.id.imageView);
         getPostDetails();
         Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
 
@@ -70,6 +76,11 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ClassAnnouncementsModel model;
                 model = dataSnapshot.getValue(ClassAnnouncementsModel.class);
+                String imgUrl = model.getImgUrl();
+
+                Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
+
+
                 titleText.setText(model.getTitle());
                 descText.setText(model.getDesc());
                 authorChip.setText(model.getauthor());
@@ -104,7 +115,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 String key = databaseReference.push().getKey();
 
                 String todo_title = titleText.getText().toString();
-                String todo_desc =  descText.getText().toString();
+                String todo_desc = descText.getText().toString();
                 String todo_author = authorChip.getText().toString();
 
                 HashMap<String, Object> todoMap = new HashMap<>();
@@ -118,7 +129,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                         View contextView = findViewById(R.id.mainLayout);
 
                         Snackbar snackbar = Snackbar
-                                .make(contextView, "'" + todo_title + "' was successfully added to your To-Do List." , Snackbar.LENGTH_LONG);
+                                .make(contextView, "'" + todo_title + "' was successfully added to your To-Do List.", Snackbar.LENGTH_LONG);
 
                         snackbar.show();
                     }

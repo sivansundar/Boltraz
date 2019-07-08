@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                         setFragment(dashboardFragment);
                         break;
 
-                        default:
-                            return false;
+                    default:
+                        return false;
                 }
 
                 return true;

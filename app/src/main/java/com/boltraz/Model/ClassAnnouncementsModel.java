@@ -8,6 +8,7 @@ public class ClassAnnouncementsModel {
     private String desc;
     private String postID;
     private String author;
+    private String imgUrl;
 
 
     public ClassAnnouncementsModel() {
@@ -31,11 +32,20 @@ public class ClassAnnouncementsModel {
     }
 
 
-    public ClassAnnouncementsModel(String title, String desc, String postID, String author) {
+    public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl) {
         this.title = title;
         this.desc = desc;
         this.postID = postID;
         this.author = author;
+        this.imgUrl = imgUrl;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public String getTitle() {

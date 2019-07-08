@@ -1,14 +1,22 @@
 package com.boltraz.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +32,13 @@ import com.boltraz.R;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +46,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.enums.EPickType;
+import com.vansuita.pickimage.listeners.IPickResult;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +89,9 @@ public class MainFragment extends Fragment {
     @BindView(R.id.name_label)
     TextView labelName;
 
+    private static final int GALLERY_REQUEST = -1;
+
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     @BindView(R.id.addAnnouncement_fab)
@@ -76,6 +103,9 @@ public class MainFragment extends Fragment {
     private static final String TAG = "Boltraz MainActivity";
     String userID;
     String name = "";
+    public PickSetup setup;
+    public StorageReference mStorage;
+    Uri uploadImage;
 
 
     int todoSize = 0;
@@ -83,7 +113,11 @@ public class MainFragment extends Fragment {
 
     public FirebaseDatabase mDatabase;
     public DatabaseReference databaseReference;
+    View rootView;
+    private ProgressDialog mProgressBar;
+
     private Unbinder mUnbinder;
+    private Unbinder mUnbinder2;
 
     @Override
     public void onDestroyView() {
@@ -136,11 +170,14 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
+        mStorage = FirebaseStorage.getInstance().getReference();
+
 
         userID = mAuth.getUid();
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
@@ -150,9 +187,29 @@ public class MainFragment extends Fragment {
         todoNumber_label = rootView.findViewById(R.id.toDoNumber_label);
 
         mUnbinder = ButterKnife.bind(this, rootView);
+        // mUnbinder2 = ButterKnife.bind(this, customLayout);
 
         todoNumber_label.setText("" + todoSize);
         labelName.setText("" + name);
+
+        mProgressBar = new ProgressDialog(getContext());
+
+        setup = new PickSetup()
+                .setTitle("Title")
+                .setTitleColor(Color.BLACK)
+                .setBackgroundColor(Color.WHITE)
+                .setProgressText("On it")
+                .setProgressTextColor(Color.GREEN)
+                .setCancelText("Cancel")
+                .setFlip(true)
+                .setMaxSize(500)
+                .setPickTypes(EPickType.GALLERY, EPickType.CAMERA)
+                .setCameraButtonText("Camera")
+                .setGalleryButtonText("Gallery")
+                .setIconGravity(Gravity.LEFT)
+                .setButtonOrientation(LinearLayout.VERTICAL)
+                .setSystemDialog(false);
+
 
 
 
@@ -240,7 +297,6 @@ public class MainFragment extends Fragment {
         }
 
 
-
     }
 
     private void refreshAnnouncements() {
@@ -291,10 +347,132 @@ public class MainFragment extends Fragment {
         firebaseRecyclerAdapter.startListening();
     }
 
+
     @OnClick(R.id.addAnnouncement_fab)
     public void onAddAnnouncement_fabClicked() {
         //TODO: add click handling
 
+        View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
+        MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
+        ImageButton imageButton = customLayout.findViewById(R.id.add_imageButton);
+
+        add_image_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                PickImageDialog.build(setup, new IPickResult() {
+                    @Override
+                    public void onPickResult(PickResult pickResult) {
+                        if (pickResult.getError() == null) {
+                            Toast.makeText(getContext(), "URI : " + pickResult.getUri().toString(), Toast.LENGTH_SHORT).show();
+                            uploadImage = pickResult.getUri();
+                            imageButton.setImageURI(pickResult.getUri());
+
+
+                        }
+                    }
+                }).show(getFragmentManager());
+            }
+
+
+        });
+
+        EditText title_editText = customLayout.findViewById(R.id.announ_title_edittext);
+        EditText desc_editText = customLayout.findViewById(R.id.announ_desc_editText);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setView(customLayout);
+        alert.setTitle("Add an announcement");
+        alert.setPositiveButton("Post", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String title = title_editText.getText().toString();
+                String desc = desc_editText.getText().toString();
+                startImageUpload(title, desc);
+
+            }
+        });
+        alert.show();
+
+
+    }
+
+    private void startImageUpload(String title_text, String desc_text) {
+
+        Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
+
+
+        if (title_text != null && desc_text != null) {
+
+            mProgressBar.setMessage("Posting...");
+            mProgressBar.show();
+
+            String key = databaseReference.child("classAnnouncements/Class7A").push().getKey();
+            StorageReference filePath = mStorage.child("classAnnouncements/Class7A/").child(key).child(uploadImage.getLastPathSegment());
+
+            Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
+            filePath.putFile(uploadImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+
+                        filePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+
+                                    Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
+                                    mProgressBar.dismiss();
+
+                                    Snackbar snackbar = Snackbar
+                                            .make(rootView, "Announcement posted successfully", Snackbar.LENGTH_LONG);
+
+                                    snackbar.show();
+
+                                    HashMap<String, Object> postValues = new HashMap<String, Object>();
+                                    postValues.put("title", title_text);
+                                    postValues.put("desc", desc_text);
+                                    postValues.put("author", name);
+                                    postValues.put("postID", key);
+                                    postValues.put("imgUrl", downloadUrl);
+
+                                    startPostUpload(postValues, key);
+                                }
+                            }
+                        });
+
+                        //String downloadUrl = filePath.getDownloadUrl().toString();
+
+
+                    } else {
+                        Toast.makeText(getContext(), "Failed ", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                    }
+                }
+            });
+        }
+
+
+    }
+
+    private void startPostUpload(HashMap<String, Object> postValues, String key) {
+
+        databaseReference.child("classAnnouncements/Class7A").child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getContext(), "Post added successfully : " + key, Toast.LENGTH_SHORT).show();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Failed to add post : " + key, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "onFailure: failed to add post : ", e);
+                    }
+                });
 
     }
 

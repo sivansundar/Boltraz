@@ -11,18 +11,18 @@
     <RelativeLayout
         android:padding="15dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.card.MaterialCardView
         android:id="@+id/announ_card"
         app:cardElevation="8dp" app:cardBackgroundColor="#000"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
         <RelativeLayout
             android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/title_holder"
@@ -73,29 +73,23 @@
 
 
 
-
-
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/img_holder"
+
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/title_holder">
+                android:id="@+id/imageView"
 
-                <ImageView
-                    android:id="@+id/post_img"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/round_account_circle_black_36" />
+                android:layout_below="@id/title_holder" />
 
-            </RelativeLayout>
 
             <ScrollView
                 android:layout_height="wrap_content"
                 android:id="@+id/content_scroll"
                 android:layout_width="match_parent"
-                android:layout_below="@+id/img_holder">
+
+                android:layout_below="@+id/imageView">
 
                 <TextView
                     android:textColor="#eeeeee"
