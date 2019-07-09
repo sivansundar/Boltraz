@@ -136,11 +136,15 @@ public class NotesFragment extends Fragment {
         subjectViewHolder.setTitle(subjectModel.getTitle());
         subjectViewHolder.setCcode(subjectModel.getCcode());
 
+        String subjectID = subjectModel.getSub_id();
+
         subjectViewHolder.mView.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
 
-            startActivity(new Intent(getActivity(), SubjectActivity.class));
+            Intent intent = new Intent(new Intent(getActivity(), SubjectActivity.class));
+            intent.putExtra("subject_id", subjectID);
+            startActivity(intent);
 
           }
         });
