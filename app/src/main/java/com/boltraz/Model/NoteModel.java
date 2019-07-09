@@ -4,16 +4,14 @@ public class NoteModel {
 
     public String fileName;
     public String fileID;
-    public long fileSize;
     public String fileURL;
 
     public NoteModel() {
     }
 
-    public NoteModel(String fileName, String fileID, long fileSize, String fileURL) {
+    public NoteModel(String fileName, String fileID, String fileURL) {
         this.fileName = fileName;
         this.fileID = fileID;
-        this.fileSize = fileSize;
         this.fileURL = fileURL;
     }
 
@@ -33,13 +31,7 @@ public class NoteModel {
         this.fileID = fileID;
     }
 
-    public long getFileSize() {
-        return fileSize;
-    }
 
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
 
     public String getFileURL() {
         return fileURL;

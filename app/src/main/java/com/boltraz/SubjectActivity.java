@@ -1,6 +1,7 @@
 package com.boltraz;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.boltraz.Model.NoteModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -36,6 +42,10 @@ public class SubjectActivity extends AppCompatActivity {
     @BindView(R.id.notes_recyclerView)
     RecyclerView notesRecyclerView;
 
+    public FirebaseStorage mStorage;
+
+    private static final String TAG = "Boltraz SubjectActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +57,8 @@ public class SubjectActivity extends AppCompatActivity {
         notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recyclerView);
         notesRecyclerView.setHasFixedSize(true);
         notesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mStorage = FirebaseStorage.getInstance();
 
         Toast.makeText(this, "Subject ID : " + subjectID, Toast.LENGTH_SHORT).show();
 
@@ -79,7 +91,20 @@ public class SubjectActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull SubjectActivity.NoteViewHolder noteViewHolder, int i, @NonNull NoteModel noteModel) {
                 noteViewHolder.setFileName(noteModel.getFileName());
-                noteViewHolder.setFileSize(noteModel.getFileSize());
+
+                String fileURL = noteModel.getFileURL();
+                Log.d(TAG, "onBindViewHolder: fileURL :  " + fileURL);
+               StorageReference fileRef = mStorage.getReferenceFromUrl(fileURL);
+                fileRef.getMetadata().addOnCompleteListener(new OnCompleteListener<StorageMetadata>() {
+                    @Override
+                    public void onComplete(@NonNull Task<StorageMetadata> task) {
+                        if (task.isSuccessful()) {
+                            long size = task.getResult().getSizeBytes();
+                            long sizeinMb = size / (1024 * 1024);
+                            noteViewHolder.setFileSize(sizeinMb);
+                        }
+                    }
+                });
             }
 
             @NonNull
@@ -112,7 +137,7 @@ public class SubjectActivity extends AppCompatActivity {
 
         public void setFileSize(long fileSize) {
             TextView fileSize_textView = mView.findViewById(R.id.fileSize_text);
-            fileSize_textView.setText("" + fileSize);
+            fileSize_textView.setText("" + fileSize + " MB");
         }
 
     }
