@@ -89,7 +89,6 @@ public class MainFragment extends Fragment {
     @BindView(R.id.name_label)
     TextView labelName;
 
-    private static final int GALLERY_REQUEST = -1;
 
 
     private FirebaseAuth mAuth;

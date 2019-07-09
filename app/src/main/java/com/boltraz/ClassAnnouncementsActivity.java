@@ -3,6 +3,7 @@ package com.boltraz;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alexvasilkov.gestures.Settings;
+import com.alexvasilkov.gestures.views.GestureImageView;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,7 +49,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     @BindView(R.id.addAlert_fab)
     FloatingActionButton FabaddAlert;
     @BindView(R.id.imageView)
-    ImageView post_imageView;
+    GestureImageView post_imageView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
     String UID, imgUrl;
@@ -61,8 +64,22 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
         todoReference = mDatabase.getReference().child("students");
-
         post_imageView = findViewById(R.id.imageView);
+
+        post_imageView.getController().getSettings()
+                .setMaxZoom(2f)
+                .setDoubleTapZoom(-1f) // Falls back to max zoom level
+                .setPanEnabled(true)
+                .setZoomEnabled(true)
+                .setDoubleTapEnabled(true)
+                .setRotationEnabled(false)
+                .setRestrictRotation(false)
+                .setOverscrollDistance(0f, 0f)
+                .setOverzoomFactor(2f)
+                .setFillViewport(false)
+                .setFitMethod(Settings.Fit.INSIDE)
+                .setGravity(Gravity.CENTER);
+
         getPostDetails();
         Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
 

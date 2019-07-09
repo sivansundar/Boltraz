@@ -76,11 +76,12 @@
             </RelativeLayout>
 
 
-            <ImageView
+            <com.alexvasilkov.gestures.views.GestureImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:id="@+id/imageView"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
+                android:src="@drawable/img1"
                 android:layout_below="@id/title_holder" />
 
 

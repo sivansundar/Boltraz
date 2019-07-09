@@ -38,6 +38,7 @@ android {
         exclude 'META-INF/io.netty.versions.properties'
         exclude 'META-INF/INDEX.LIST'
     }
+    buildToolsVersion = '28.0.3'
 
 
 }
@@ -66,6 +67,7 @@ dependencies {
 
     //implementation 'com.google.firebase:firebase-admin:6.6.0'
     implementation 'com.github.jrvansuita:PickImage:+'
+    implementation 'com.alexvasilkov:gesture-views:2.5.2'
 
 
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
