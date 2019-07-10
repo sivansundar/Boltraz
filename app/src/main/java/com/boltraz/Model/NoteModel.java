@@ -5,14 +5,25 @@ public class NoteModel {
     public String fileName;
     public String fileID;
     public String fileURL;
+    public String fileSize;
+
 
     public NoteModel() {
     }
 
-    public NoteModel(String fileName, String fileID, String fileURL) {
+    public NoteModel(String fileName, String fileID, String fileURL, String fileSize) {
         this.fileName = fileName;
         this.fileID = fileID;
         this.fileURL = fileURL;
+        this.fileSize = fileSize;
+    }
+
+    public String getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(String fileSize) {
+        this.fileSize = fileSize;
     }
 
     public String getFileName() {
