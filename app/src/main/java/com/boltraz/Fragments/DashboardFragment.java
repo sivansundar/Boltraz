@@ -1,10 +1,13 @@
 package com.boltraz.Fragments;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +19,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.boltraz.LoginActivity;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,6 +56,10 @@ public class DashboardFragment extends Fragment {
     public static final String TAG = "Dashboard Fragment";
     @BindView(R.id.logout_btn)
     Button logout_btn;
+
+    public ProgressDialog progressDialog;
+
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -107,6 +116,8 @@ public class DashboardFragment extends Fragment {
         profilePictureImg = view.findViewById(R.id.profile_picture_img);
         profileName = view.findViewById(R.id.profile_name);
 
+        progressDialog = new ProgressDialog(getContext());
+
         mAuth = FirebaseAuth.getInstance();
         if (UID.isEmpty()) {
             UID = mAuth.getUid();
@@ -118,37 +129,14 @@ public class DashboardFragment extends Fragment {
         profileName.setText("" + userName);
         usn_text.setText("" + usn);
 
+        getUserDetails();
+
+        //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
-    @OnClick(R.id.logout_btn)
-    public void onLogout_btnClicked() {
-        //TODO: add click handling
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setTitle("Logout?");
-        alertDialogBuilder.setMessage("Are you sure you want to log out of Boltraz?");
-        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                mAuth.signOut();
-
-            }
-        });
-
-        alertDialogBuilder.show();
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
-        //Uri url = mAuth.getCurrentUser().getPhotoUrl();
-        //Glide.with(getContext()).load(url).into(profilePictureImg);
+    private void getUserDetails() {
 
         if (userName.isEmpty()) {
             databaseReference.child("students/semester7/").child(UID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -173,6 +161,96 @@ public class DashboardFragment extends Fragment {
             });
 
         }
+    }
+
+    @OnClick(R.id.logout_btn)
+    public void onLogout_btnClicked() {
+        //TODO: add click handling
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setTitle("Logout?");
+        alertDialogBuilder.setMessage("Are you sure you want to log out of Boltraz?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                Log.d(TAG, "onAuthStateChanged: " + mAuth.getCurrentUser().getDisplayName() + " is signed out");
+                progressDialog.setTitle("Sign out");
+                progressDialog.setMessage("Signing you out " + mAuth.getCurrentUser().getDisplayName());
+                progressDialog.show();
+                Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        FirebaseAuth.getInstance().signOut();
+
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                }, 3000);
+
+
+
+            }
+        });
+
+        alertDialogBuilder.show();
+
+    }
+
+   /* public void setupFirebaseListener() {
+        Log.d(TAG, "setupFirebaseListener: Setting up Firebase AuthStateListener");
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user!=null) {
+                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed in");
+                }
+                else {
+                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed out");
+                    progressDialog.setTitle("Sign out");
+                    progressDialog.setMessage("Signing you out " + user.getDisplayName());
+                    progressDialog.show();
+                    Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }
+                    }, 3000);
+                }
+            }
+        };
+    }*/
+    @Override
+    public void onStop() {
+        super.onStop();
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+
+        //Uri url = mAuth.getCurrentUser().getPhotoUrl();
+        //Glide.with(getContext()).load(url).into(profilePictureImg);
+
+
 
     }
 
