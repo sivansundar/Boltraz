@@ -14,9 +14,12 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +111,8 @@ public class MainFragment extends Fragment {
 
 
     int todoSize = 0;
+
+    String announcement_type;
 
 
     public FirebaseDatabase mDatabase;
@@ -354,6 +359,29 @@ public class MainFragment extends Fragment {
         View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
         MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
         ImageButton imageButton = customLayout.findViewById(R.id.add_imageButton);
+        Spinner announ_type_spinner = customLayout.findViewById(R.id.announ_type_spinner);
+
+
+
+        String [] announ_type = { "None", "Assignment"};
+
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_dropdown_item, announ_type);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        announ_type_spinner.setAdapter(arrayAdapter);
+
+        announ_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getContext(), "Spinner Value : " + announ_type[position], Toast.LENGTH_SHORT).show();
+
+                announcement_type = announ_type[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         add_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -436,6 +464,7 @@ public class MainFragment extends Fragment {
                                     postValues.put("author", name);
                                     postValues.put("postID", key);
                                     postValues.put("imgUrl", downloadUrl);
+                                    postValues.put("type", announcement_type);
 
                                     startPostUpload(postValues, key);
                                 }

@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import com.boltraz.LoginActivity;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -137,6 +138,8 @@ public class DashboardFragment extends Fragment {
     }
 
     private void getUserDetails() {
+        Uri url = mAuth.getCurrentUser().getPhotoUrl();
+        Glide.with(getContext()).load(url).into(profilePictureImg);
 
         if (userName.isEmpty()) {
             databaseReference.child("students/semester7/").child(UID).addListenerForSingleValueEvent(new ValueEventListener() {

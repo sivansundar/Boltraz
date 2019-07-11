@@ -81,7 +81,7 @@ public class SubjectActivity extends AppCompatActivity {
 
         notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recyclerView);
         notesRecyclerView.setHasFixedSize(true);
-        notesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        notesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
@@ -334,9 +334,9 @@ public class SubjectActivity extends AppCompatActivity {
 
     }
     public void startDownload(StorageReference fileRef, String fileName, String format) throws IOException {
-        Log.d(TAG, "startDownload: File details : " + fileName + "\n " + contentType);
+        Log.d(TAG, "startDownload: File details : " + fileName + "\n " + format);
 
-        File localFile = File.createTempFile(fileName, "pdf", Environment.getExternalStorageDirectory());
+        File localFile = File.createTempFile(fileName, "pdf");
 
 
 
@@ -349,10 +349,12 @@ public class SubjectActivity extends AppCompatActivity {
                 progressDialog.show();
 
 
+
             }
         }).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+
                 progressDialog.dismiss();
             }
         });

@@ -22,7 +22,7 @@
             android:background="#121212"
             app:tabRippleColor="@color/colorPrimaryDark"
             app:tabMode="scrollable"
-            app:tabTextColor="#80a80a"
+            app:tabTextColor="#A0E405"
             android:padding="10dp"
             android:scrollbars="horizontal"
             android:layout_width="match_parent"

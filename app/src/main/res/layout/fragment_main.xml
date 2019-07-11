@@ -67,8 +67,9 @@
 
 
         <LinearLayout
+            android:id="@+id/toDo_holder"
             android:orientation="horizontal"
-            android:layout_above="@id/classAnnouncements_RecyclerView"
+            android:layout_below="@id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -76,7 +77,7 @@
                 android:id="@+id/todoList_holder"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="230dp"
+                android:layout_height="wrap_content"
                 app:cardBackgroundColor="#03DAC6"
                 app:cardCornerRadius="0dp"
                 app:cardElevation="8dp">
@@ -119,7 +120,7 @@
                 android:id="@+id/assignments_holder"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="230dp"
+                android:layout_height="wrap_content"
                 app:cardBackgroundColor="#c60055"
                 app:cardCornerRadius="0dp"
                 app:cardElevation="8dp">
@@ -160,11 +161,12 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_above="@id/footer"
+            android:layout_below="@+id/toDo_holder"
             android:background="#000"
+            android:layout_above="@+id/footer"
             android:id="@+id/classAnnouncements_RecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="400dp" />
+            android:layout_height="match_parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addAnnouncement_fab"
