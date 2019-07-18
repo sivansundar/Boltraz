@@ -2,6 +2,7 @@ package com.boltraz;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
@@ -14,9 +15,15 @@ import com.boltraz.Fragments.DashboardFragment;
 import com.boltraz.Fragments.MainFragment;
 import com.boltraz.Fragments.NotesFragment;
 import com.boltraz.Fragments.TimetableFragment;
+import com.boltraz.Model.UserModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import butterknife.BindView;
@@ -44,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     private TimetableFragment timetableFragment;
     private NotesFragment notesFragment;
 
+    FirebaseDatabase mFirebaseDatabase;
+    DatabaseReference databaseReference;
+
+
     String userID;
     private static final String TAG = "Boltraz MainActivity";
 
@@ -59,9 +70,33 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         timetableFragment = new TimetableFragment();
         notesFragment = new NotesFragment();
 
+        mAuth = FirebaseAuth.getInstance();
         setFragment(mainFragment);
 
-        startListeningNotifications();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mFirebaseDatabase.getReference();
+
+        userID = mAuth.getUid();
+
+        databaseReference.child("students").child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserModel model = dataSnapshot.getValue(UserModel.class);
+
+                String classx = "Class" + (String) dataSnapshot.child("classsection").getValue();
+
+                startListeningNotifications(classx);
+                Log.d(TAG, "onDataChange: classxx MAIN : " + classx);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        //   startListeningNotifications();
 
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -95,10 +130,11 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
     }
 
-    private void startListeningNotifications() {
+    private void startListeningNotifications(String classxx) {
 
+        Log.d(TAG, "startListeningNotifications: Listening to notifications : " + classxx);
         FirebaseApp.initializeApp(this);
-        FirebaseMessaging.getInstance().subscribeToTopic("Class7A_Announcements");
+        FirebaseMessaging.getInstance().subscribeToTopic(classxx + "_Announcements");
     }
 
     private void setFragment(Fragment fragment) {
