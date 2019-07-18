@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,9 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.boltraz.LoginActivity;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,7 +59,7 @@ public class DashboardFragment extends Fragment {
 
     public ProgressDialog progressDialog;
 
-
+    public SharedPreferences preferences;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -119,6 +118,13 @@ public class DashboardFragment extends Fragment {
 
         progressDialog = new ProgressDialog(getContext());
 
+        preferences = getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+
+        String name = preferences.getString("name", "XXX");
+        String usn = preferences.getString("usn", "1NH16CSXXX");
+
+        Toast.makeText(getContext(), "XXX : " + name, Toast.LENGTH_SHORT).show();
+
         mAuth = FirebaseAuth.getInstance();
         if (UID.isEmpty()) {
             UID = mAuth.getUid();
@@ -127,10 +133,10 @@ public class DashboardFragment extends Fragment {
         databaseReference = firebaseDatabase.getReference();
 
         usn_text = (TextView) view.findViewById(R.id.usn_text);
-        profileName.setText("" + userName);
-        usn_text.setText("" + usn);
+        profileName.setText(name);
+        usn_text.setText(usn);
 
-        getUserDetails();
+        //  getUserDetails();
 
         //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
@@ -138,9 +144,9 @@ public class DashboardFragment extends Fragment {
     }
 
     private void getUserDetails() {
-        Uri url = mAuth.getCurrentUser().getPhotoUrl();
+       /* Uri url = mAuth.getCurrentUser().getPhotoUrl();
         Glide.with(getContext()).load(url).into(profilePictureImg);
-
+*/
         if (userName.isEmpty()) {
             databaseReference.child("students/semester7/").child(UID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

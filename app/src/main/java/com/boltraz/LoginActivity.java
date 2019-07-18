@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.client_id))
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
@@ -253,8 +253,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void emailLogin() {
-        userEmail = userIDTxt.getText().toString() + "@gmail.com";
-         password = passwordTxt.getText().toString();
+        userEmail = userIDTxt.getText().toString().trim();
+        password = passwordTxt.getText().toString().trim();
 
         mAuth.signInWithEmailAndPassword(userEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -264,7 +264,7 @@ public class LoginActivity extends AppCompatActivity {
                  //   getLoginDocument();
 
                     Log.d(TAG, "onComplete:Logged in successfully by " + userEmail);
-                    getTokenAndUpdate(mAuth.getUid());
+                    //getTokenAndUpdate(mAuth.getUid());
                     Toast.makeText(LoginActivity.this, "Welcome " + task.getResult().getUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));

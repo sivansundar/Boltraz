@@ -2,67 +2,55 @@ package com.boltraz.Model;
 
 public class UserModel {
 
-    String Name;
-    String Email;
-    String ClassSection;
-    int Semester;
-    String UID;
-    String USN;
-    String token_id;
-    String classrep;
+    public String name;
+    public String email;
+    public int semester;
+    public String usn;
+    public String classrep;
+    public String classsection;
 
     public UserModel() {
     }
 
-    public UserModel(String name, String email, String classSection, int semester, String UID, String USN, String token_id, String classrep) {
-        Name = name;
-        Email = email;
-        ClassSection = classSection;
-        Semester = semester;
-        this.UID = UID;
-        this.USN = USN;
-        this.token_id = token_id;
+    public UserModel(String name, String email, int semester, String usn, String classrep, String classsection) {
+        this.name = name;
+        this.email = email;
+        this.semester = semester;
+        this.usn = usn;
         this.classrep = classrep;
+        this.classsection = classsection;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
-    }
-
-    public String getClassSection() {
-        return ClassSection;
-    }
-
-    public void setClassSection(String classSection) {
-        ClassSection = classSection;
+        this.email = email;
     }
 
     public int getSemester() {
-        return Semester;
+        return semester;
     }
 
     public void setSemester(int semester) {
-        Semester = semester;
+        this.semester = semester;
     }
 
-    public String getUID() {
-        return UID;
+    public String getUSN() {
+        return usn;
     }
 
-    public void setUID(String UID) {
-        this.UID = UID;
+    public void setUSN(String usn) {
+        this.usn = usn;
     }
 
     public String getClassrep() {
@@ -73,19 +61,11 @@ public class UserModel {
         this.classrep = classrep;
     }
 
-    public String getUSN() {
-        return USN;
+    public String getClasssection() {
+        return classsection;
     }
 
-    public void setUSN(String USN) {
-        this.USN = USN;
-    }
-
-    public String getToken_id() {
-        return token_id;
-    }
-
-    public void setToken_id(String token_id) {
-        this.token_id = token_id;
+    public void setClasssection(String classsection) {
+        this.classsection = classsection;
     }
 }

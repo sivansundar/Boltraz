@@ -1,6 +1,7 @@
 package com.boltraz.Fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +44,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    public String classxx;
+
 
     @BindView(R.id.monday_tab)
     TabItem mondayTab;
@@ -68,6 +71,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private OnFragmentInteractionListener mListener;
 
     private static final String TAG = "Boltraz TimeTableFragment";
+    SharedPreferences preferences;
+
 
     public TimetableFragment() {
         // Required empty public constructor
@@ -115,8 +120,15 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL);
         //timeTableRecyclerView.addItemDecoration(itemDecor);
 
+        preferences = getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+
+        classxx = preferences.getString("classxx", "XXX"); //ClassSection
+
+        Toast.makeText(getContext(), "RES : " + classxx, Toast.LENGTH_SHORT).show();
+
+        Log.d(TAG, "onCreateView: RES : " + classxx);
         mDatabase = FirebaseDatabase.getInstance();
-        databaseReference = mDatabase.getReference().child("timetable").child("Class7A");
+        databaseReference = mDatabase.getReference().child("timetable").child(classxx);
 
         // Sends a firebase query to pull according to day.
 
@@ -136,14 +148,14 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                         break;
 
                     case "Wednesday" :
-                        //getTimeTable("Wednesday");
+                        getTimeTable("Wednesday");
                         break;
                     case "Thursday" :
-                      //  getTimeTable("Thursday");
+                        getTimeTable("Thursday");
                         break;
 
                     case "Friday" :
-                       // getTimeTable("Friday");
+                        getTimeTable("Friday");
                         break;
 
                     default:
@@ -220,11 +232,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
             super(itemView);
             mView = itemView;
 
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
+
         }
 
         public void setTitle(String title) {

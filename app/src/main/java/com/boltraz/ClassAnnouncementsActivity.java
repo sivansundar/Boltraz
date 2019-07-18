@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +37,7 @@ import butterknife.OnClick;
 public class ClassAnnouncementsActivity extends AppCompatActivity {
 
     String post_key = "";
+    String classxxval = "";
     @BindView(R.id.title_text)
     TextView titleText;
     @BindView(R.id.date_text)
@@ -54,13 +54,23 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     private DatabaseReference databaseReference, todoReference;
     String UID, imgUrl;
 
+    String title, desc, author;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_announcements);
         ButterKnife.bind(this);
 
+        title = getIntent().getStringExtra("title");
+        desc = getIntent().getStringExtra("desc");
         post_key = getIntent().getStringExtra("postID");
+        classxxval = getIntent().getStringExtra("classxx");
+        imgUrl = getIntent().getStringExtra("imageUrl");
+
+        Log.d("CA", "onCreate: classxxval : " + classxxval
+                + "\nTitle : " + title + "\ndesc : " + desc + "\npostkey : " + post_key + "\nimgUrl : " + imgUrl);
+
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
         todoReference = mDatabase.getReference().child("students");
@@ -80,28 +90,62 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 .setFitMethod(Settings.Fit.INSIDE)
                 .setGravity(Gravity.CENTER);
 
+        Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
+
         getPostDetails();
         Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
 
+        post_imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                alertDialogBuilder.setTitle("Add to your To-Do List?");
+                alertDialogBuilder.show();
+            }
+        });
         UID = FirebaseAuth.getInstance().getUid();
 
 
     }
 
+    private void getPostDetails2() {
+        databaseReference.child(classxxval).child(post_key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ClassAnnouncementsModel classAnnouncementsModel = dataSnapshot.getValue(ClassAnnouncementsModel.class);
+                String url = classAnnouncementsModel.getTitle();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void getPostDetails() {
-        databaseReference.child("Class7A").child(post_key).addValueEventListener(new ValueEventListener() {
+
+        Log.d("values getPostDetails : ", "onDataChange: getPostDetails : " + classxxval + " : postKey : " + post_key);
+
+
+        databaseReference.child(classxxval).child(post_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ClassAnnouncementsModel model;
                 model = dataSnapshot.getValue(ClassAnnouncementsModel.class);
-                imgUrl = model.getImgUrl();
+                // imgUrl = String.valueOf(dataSnapshot.child("imgUrl").getValue());
 
+                String title_text = model.getTitle();
+                String desc_text = model.getDesc();
+                String author_text = model.getauthor();
+
+                Log.d("CLASSANNOUNCEMENTS : ", "onDataChange: VAL : " + title);
                 Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
 
-
-                titleText.setText(model.getTitle());
-                descText.setText(model.getDesc());
-                authorChip.setText(model.getauthor());
+                // String title = String.valueOf(model.getTitle());
+                titleText.setText(title_text);
+                descText.setText(desc_text);
+                authorChip.setText(author_text);
 
 
             }
@@ -143,7 +187,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 todoMap.put("author", todo_author);
                 todoMap.put("imgUrl", imgUrl);
 
-                todoReference.child("semester7").child(UID).child("todos").child(key).setValue(todoMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                todoReference.child(UID).child("todos").child(key).setValue(todoMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         View contextView = findViewById(R.id.mainLayout);

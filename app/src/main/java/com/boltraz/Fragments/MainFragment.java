@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -105,14 +105,17 @@ public class MainFragment extends Fragment {
     private static final String TAG = "Boltraz MainActivity";
     String userID;
     String name = "";
+    public Uri uploadImage;
+
     public PickSetup setup;
     public StorageReference mStorage;
-    Uri uploadImage;
+    public Query query_announcements;
 
 
     int todoSize = 0;
 
     String announcement_type;
+    String CLASSXX = "";
 
 
     public FirebaseDatabase mDatabase;
@@ -121,7 +124,14 @@ public class MainFragment extends Fragment {
     private ProgressDialog mProgressBar;
 
     private Unbinder mUnbinder;
-    private Unbinder mUnbinder2;
+    String[] classxxarr = {"Class7A", "Class7B", "Class7C"};
+
+    String classxxVal = "";
+
+    String classxx;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     public void onDestroyView() {
@@ -182,8 +192,8 @@ public class MainFragment extends Fragment {
         databaseReference = mDatabase.getReference();
         mStorage = FirebaseStorage.getInstance().getReference();
 
-
         userID = mAuth.getUid();
+
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
         classAnnouncementsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -214,6 +224,12 @@ public class MainFragment extends Fragment {
                 .setButtonOrientation(LinearLayout.VERTICAL)
                 .setSystemDialog(false);
 
+        sharedPreferences = getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        // ClassXX not recognizing the value on first instance.
+
+
 
 
 
@@ -224,20 +240,37 @@ public class MainFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        refreshAnnouncements();
-        getToDoCount();
-
-        getDP();
-
-        databaseReference.child("students/semester7/").child(userID).addValueEventListener(new ValueEventListener() {
+        databaseReference.child("students").child(userID).addValueEventListener(new ValueEventListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserModel userModel = dataSnapshot.getValue(UserModel.class);
 
                 String classrep = userModel.getClassrep();
+                CLASSXX = "Class" + userModel.getClasssection();
 
-                Log.d(TAG, "onDataChange: " + classrep);
+                String usn = userModel.getUSN();
+
+                String username = userModel.getName();
+
+                // The shared prefs work perfectly fine. Use that to save values.
+                String classxx = "Class" + userModel.getClasssection();
+
+
+                editor.putString("name", username);
+                editor.putString("classxx", classxx);
+                editor.putString("usn", usn);
+                editor.apply();
+
+
+                Log.d(TAG, "onDataChange: CLASSXX Values : " + classxxVal);
+
+                refreshAnnouncements(sharedPreferences.getString("classxx", "XXX"));
+
+
+                addAnnouncement_fab = rootView.findViewById(R.id.addAnnouncement_fab);
+
+                Log.d(TAG, "onDataChange: " + classrep + " : CLASSXX : " + classxx);
                 if (classrep.equalsIgnoreCase("yes")) {
                     addAnnouncement_fab.setVisibility(View.VISIBLE);
                 } else {
@@ -251,11 +284,17 @@ public class MainFragment extends Fragment {
             }
         });
 
+
+        getToDoCount();
+
+        getDP();
+
+
     }
 
     private void getToDoCount() {
 
-        databaseReference.child("students/semester7/").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("students").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 todoSize = (int) dataSnapshot.getChildrenCount();
@@ -275,11 +314,11 @@ public class MainFragment extends Fragment {
 
     private void getDP() {
 
-        Uri url = mAuth.getCurrentUser().getPhotoUrl();
-        Glide.with(getContext()).load(url).into(circleImageView);
+       /* Uri url = mAuth.getCurrentUser().getPhotoUrl();
+        Glide.with(getContext()).load(url).into(circleImageView);*/
 
         if (name.isEmpty()) {
-            databaseReference.child("students/semester7/").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            databaseReference.child("students").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -303,12 +342,20 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void refreshAnnouncements() {
+    public void refreshAnnouncements(String string) {
+
+        Log.d(TAG, "refreshAnnouncements: " + CLASSXX);
+
+
+        String classxx = sharedPreferences.getString("classxx", "XXX");
+
+        Log.d(TAG, "refreshAnnouncements: classxx : " + string);
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("classAnnouncements")
-                .child("Class7A");
+                .child(string);
+
 
         FirebaseRecyclerOptions<ClassAnnouncementsModel> options =
                 new FirebaseRecyclerOptions.Builder<ClassAnnouncementsModel>()
@@ -322,6 +369,10 @@ public class MainFragment extends Fragment {
             protected void onBindViewHolder(@NonNull ClassAnnouncementsViewHolder classAnnouncementsViewHolder, int i, @NonNull ClassAnnouncementsModel timetableModel) {
 
                 String post_key = timetableModel.getPostID();
+                String title = timetableModel.getTitle();
+                String desc = timetableModel.getDesc();
+                String author = timetableModel.getauthor();
+                String imageUrl = timetableModel.getImgUrl();
 
                 classAnnouncementsViewHolder.setTitle(timetableModel.getTitle());
                 classAnnouncementsViewHolder.setDescription(timetableModel.getDesc());
@@ -329,8 +380,16 @@ public class MainFragment extends Fragment {
                 classAnnouncementsViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+
                         Intent intent = new Intent(getContext(), ClassAnnouncementsActivity.class);
+                        intent.putExtra("title", title);
+                        intent.putExtra("desc", desc);
+                        intent.putExtra("author", author);
+                        intent.putExtra("classxx", string);
+                        intent.putExtra("imageUrl", imageUrl);
                         intent.putExtra("postID", post_key);
+
                         startActivity(intent);
 
                     }
@@ -350,7 +409,6 @@ public class MainFragment extends Fragment {
         classAnnouncementsRecyclerView.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
     }
-
 
     @OnClick(R.id.addAnnouncement_fab)
     public void onAddAnnouncement_fabClicked() {
@@ -416,7 +474,10 @@ public class MainFragment extends Fragment {
 
                 String title = title_editText.getText().toString();
                 String desc = desc_editText.getText().toString();
-                startImageUpload(title, desc);
+                String classx = sharedPreferences.getString("classxx", "SSS");
+
+                Log.d(TAG, "onClick: CLASSX : ALERT DIALOG" + classx);
+                startImageUpload(title, desc, classx);
 
             }
         });
@@ -425,7 +486,7 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void startImageUpload(String title_text, String desc_text) {
+    private void startImageUpload(String title_text, String desc_text, String classxxx) {
 
         Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
 
@@ -435,8 +496,8 @@ public class MainFragment extends Fragment {
             mProgressBar.setMessage("Posting...");
             mProgressBar.show();
 
-            String key = databaseReference.child("classAnnouncements/Class7A").push().getKey();
-            StorageReference filePath = mStorage.child("classAnnouncements/Class7A/").child(key).child(uploadImage.getLastPathSegment());
+            String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();
+            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxx).child(key).child(String.valueOf(uploadImage.getLastPathSegment()));
 
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
             filePath.putFile(uploadImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -466,7 +527,7 @@ public class MainFragment extends Fragment {
                                     postValues.put("imgUrl", downloadUrl);
                                     postValues.put("type", announcement_type);
 
-                                    startPostUpload(postValues, key);
+                                    startPostUpload(postValues, key, classxxx);
                                 }
                             }
                         });
@@ -485,9 +546,9 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void startPostUpload(HashMap<String, Object> postValues, String key) {
+    private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
 
-        databaseReference.child("classAnnouncements/Class7A").child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
+        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(getContext(), "Post added successfully : " + key, Toast.LENGTH_SHORT).show();
@@ -502,7 +563,6 @@ public class MainFragment extends Fragment {
                 });
 
     }
-
 
     public static class ClassAnnouncementsViewHolder extends RecyclerView.ViewHolder {
         View mView;

@@ -66,7 +66,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:5.0.0'
 
     //implementation 'com.google.firebase:firebase-admin:6.6.0'
-    implementation 'com.github.jrvansuita:PickImage:+'
+    implementation 'com.github.jrvansuita:PickImage:2.2.4'
     implementation 'com.alexvasilkov:gesture-views:2.5.2'
 
 
