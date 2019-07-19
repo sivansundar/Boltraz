@@ -9,10 +9,25 @@ public class ClassAnnouncementsModel {
     private String postID;
     private String author;
     private String imgUrl;
+    private String time;
 
 
     public ClassAnnouncementsModel() {
 
+    }
+
+    public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl, String time) {
+        this.title = title;
+        this.desc = desc;
+        this.postID = postID;
+        this.author = author;
+        this.imgUrl = imgUrl;
+        this.time = time;
+
+    }
+
+    public String getTime() {
+        return time;
     }
 
     public String getPostID() {
@@ -31,13 +46,8 @@ public class ClassAnnouncementsModel {
         this.author = author;
     }
 
-
-    public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl) {
-        this.title = title;
-        this.desc = desc;
-        this.postID = postID;
-        this.author = author;
-        this.imgUrl = imgUrl;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getImgUrl() {

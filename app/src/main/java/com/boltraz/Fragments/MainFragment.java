@@ -30,7 +30,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.boltraz.ClassAnnouncementsActivity;
+import com.boltraz.ListAdapter.ImageListAdapter;
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -59,6 +61,9 @@ import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
 import com.vansuita.pickimage.listeners.IPickResult;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -93,6 +98,7 @@ public class MainFragment extends Fragment {
     TextView labelName;
 
 
+    private ArrayList<ImageViews_AddAnnouncement> uriArrayList;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -193,6 +199,8 @@ public class MainFragment extends Fragment {
         mStorage = FirebaseStorage.getInstance().getReference();
 
         userID = mAuth.getUid();
+
+        uriArrayList = new ArrayList<ImageViews_AddAnnouncement>();
 
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
@@ -418,7 +426,13 @@ public class MainFragment extends Fragment {
         MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
         ImageButton imageButton = customLayout.findViewById(R.id.add_imageButton);
         Spinner announ_type_spinner = customLayout.findViewById(R.id.announ_type_spinner);
+        RecyclerView image_recyclerView = customLayout.findViewById(R.id.image_recyclerView);
 
+
+        image_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        ImageListAdapter adapter = new ImageListAdapter(uriArrayList);
+        image_recyclerView.setAdapter(adapter);
 
 
         String [] announ_type = { "None", "Assignment"};
@@ -450,6 +464,10 @@ public class MainFragment extends Fragment {
                     public void onPickResult(PickResult pickResult) {
                         if (pickResult.getError() == null) {
                             Toast.makeText(getContext(), "URI : " + pickResult.getUri().toString(), Toast.LENGTH_SHORT).show();
+                            //uriArrayList.add(pickResult.getUri());
+                            uriArrayList.add(new ImageViews_AddAnnouncement(pickResult.getUri()));
+
+                            Log.d(TAG, "onPickResult: LIST URI : " + uriArrayList.toString());
                             uploadImage = pickResult.getUri();
                             imageButton.setImageURI(pickResult.getUri());
 
@@ -500,6 +518,10 @@ public class MainFragment extends Fragment {
             StorageReference filePath = mStorage.child("classAnnouncements").child(classxxx).child(key).child(String.valueOf(uploadImage.getLastPathSegment()));
 
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
+
+            for (int i = 0; i <= uriArrayList.size(); i++) {
+                // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
+            }
             filePath.putFile(uploadImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -514,10 +536,20 @@ public class MainFragment extends Fragment {
                                     Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
                                     mProgressBar.dismiss();
 
-                                    Snackbar snackbar = Snackbar
-                                            .make(rootView, "Announcement posted successfully", Snackbar.LENGTH_LONG);
 
-                                    snackbar.show();
+                                    Calendar calendar = Calendar.getInstance();
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+                                    String time = simpleDateFormat.format(calendar.getTime());
+
+                                    StringBuilder sb = new StringBuilder();
+                                    for (int i = 0; i <= 4; i++) {
+
+                                        sb.append(time.charAt(i));
+
+
+                                    }
+
+                                    Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
 
                                     HashMap<String, Object> postValues = new HashMap<String, Object>();
                                     postValues.put("title", title_text);
@@ -526,8 +558,12 @@ public class MainFragment extends Fragment {
                                     postValues.put("postID", key);
                                     postValues.put("imgUrl", downloadUrl);
                                     postValues.put("type", announcement_type);
+                                    postValues.put("time", sb.toString());
+
 
                                     startPostUpload(postValues, key, classxxx);
+                                } else {
+                                    Toast.makeText(getContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -548,10 +584,17 @@ public class MainFragment extends Fragment {
 
     private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
 
+
         databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(getContext(), "Post added successfully : " + key, Toast.LENGTH_SHORT).show();
+
+                Snackbar snackbar = Snackbar
+                        .make(rootView, "Announcement posted successfully", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
+
             }
         })
                 .addOnFailureListener(new OnFailureListener() {

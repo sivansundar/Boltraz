@@ -33,7 +33,7 @@
 
                 <TextView
                     android:id="@+id/title_text"
-                    android:textColor="#ffc4ff"
+                    android:textColor="#FFEB3B"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Title"
@@ -51,14 +51,6 @@
                     android:textSize="18sp"/>
 
 
-                <TextView
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@id/title_text"
-                    android:textColor="#fff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12:40"
-                    android:textSize="18sp"/>
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/author_chip"
@@ -85,12 +77,36 @@
                 android:layout_below="@id/title_holder" />
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageView"
+                android:layout_toLeftOf="@id/time_textView"
+                android:paddingTop="20dp"
+                android:text="Posted at "
+                android:textColor="#fff"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/time_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageView"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="20dp"
+                android:paddingTop="20dp"
+
+                android:text="12:40"
+                android:textColor="#fff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <ScrollView
                 android:layout_height="wrap_content"
                 android:id="@+id/content_scroll"
                 android:layout_width="match_parent"
 
-                android:layout_below="@+id/imageView">
+                android:layout_below="@+id/time_textView">
 
                 <TextView
                     android:textColor="#eeeeee"

@@ -50,6 +50,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     FloatingActionButton FabaddAlert;
     @BindView(R.id.imageView)
     GestureImageView post_imageView;
+    @BindView(R.id.time_textView)
+    TextView timeTextView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
     String UID, imgUrl;
@@ -138,6 +140,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 String title_text = model.getTitle();
                 String desc_text = model.getDesc();
                 String author_text = model.getauthor();
+                String time = model.getTime();
 
                 Log.d("CLASSANNOUNCEMENTS : ", "onDataChange: VAL : " + title);
                 Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
@@ -146,6 +149,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 titleText.setText(title_text);
                 descText.setText(desc_text);
                 authorChip.setText(author_text);
+                timeTextView.setText(time);
 
 
             }

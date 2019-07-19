@@ -46,10 +46,17 @@
             android:layout_height="wrap_content"
             android:text="Add an image" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/image_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
         <ImageButton
             android:id="@+id/add_imageButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="250dp"
             android:scaleType="centerCrop" />
     </LinearLayout>
 </LinearLayout>
