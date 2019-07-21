@@ -3,19 +3,24 @@ package com.boltraz;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.alexvasilkov.gestures.Settings;
-import com.alexvasilkov.gestures.views.GestureImageView;
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.ImageURLModel;
 import com.bumptech.glide.Glide;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -26,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -47,11 +53,12 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     @BindView(R.id.author_chip)
     Chip authorChip;
     @BindView(R.id.addAlert_fab)
-    FloatingActionButton FabaddAlert;
-    @BindView(R.id.imageView)
-    GestureImageView post_imageView;
+    FloatingActionButton addAnnoun_fab;
+
     @BindView(R.id.time_textView)
     TextView timeTextView;
+    @BindView(R.id.img_recyclerView)
+    RecyclerView imgRecyclerView;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
     String UID, imgUrl;
@@ -76,53 +83,66 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
         todoReference = mDatabase.getReference().child("students");
-        post_imageView = findViewById(R.id.imageView);
+        // post_imageView = findViewById(R.id.imageView);
 
-        post_imageView.getController().getSettings()
-                .setMaxZoom(2f)
-                .setDoubleTapZoom(-1f) // Falls back to max zoom level
-                .setPanEnabled(true)
-                .setZoomEnabled(true)
-                .setDoubleTapEnabled(true)
-                .setRotationEnabled(false)
-                .setRestrictRotation(false)
-                .setOverscrollDistance(0f, 0f)
-                .setOverzoomFactor(2f)
-                .setFillViewport(false)
-                .setFitMethod(Settings.Fit.INSIDE)
-                .setGravity(Gravity.CENTER);
+        imgRecyclerView.setHasFixedSize(true);
+        imgRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
+        getPostImages(post_key, classxxval);
+
+
+        // Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
 
         getPostDetails();
         Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
 
-        post_imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
-                alertDialogBuilder.setTitle("Add to your To-Do List?");
-                alertDialogBuilder.show();
-            }
-        });
+
         UID = FirebaseAuth.getInstance().getUid();
 
 
     }
 
-    private void getPostDetails2() {
-        databaseReference.child(classxxval).child(post_key).addValueEventListener(new ValueEventListener() {
+    private void getPostImages(String post_key, String classxxval) {
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("classAnnouncements")
+                .child(classxxval)
+                .child(post_key)
+                .child("imgURLs");
+
+
+        FirebaseRecyclerOptions<ImageURLModel> options =
+                new FirebaseRecyclerOptions.Builder<ImageURLModel>()
+                        .setQuery(query, ImageURLModel.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<ImageURLModel, ImageURLViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ImageURLModel, ImageURLViewHolder>(options) {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ClassAnnouncementsModel classAnnouncementsModel = dataSnapshot.getValue(ClassAnnouncementsModel.class);
-                String url = classAnnouncementsModel.getTitle();
+            protected void onBindViewHolder(@NonNull ImageURLViewHolder imageURLViewHolder, int i, @NonNull ImageURLModel imageURLModel) {
+
+                String imageUrl = imageURLModel.getImgUrl();
+
+                imageURLViewHolder.setImageUrl(imageUrl);
+
+
             }
 
+            @NonNull
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public ImageURLViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.activity_class_announcements_imagerecyclerview_item, parent, false);
+                return new ImageURLViewHolder(view);
 
             }
-        });
+        };
+
+
+        imgRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        firebaseRecyclerAdapter.startListening();
+
+
     }
 
     private void getPostDetails() {
@@ -143,7 +163,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 String time = model.getTime();
 
                 Log.d("CLASSANNOUNCEMENTS : ", "onDataChange: VAL : " + title);
-                Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
+                //Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
 
                 // String title = String.valueOf(model.getTitle());
                 titleText.setText(title_text);
@@ -159,6 +179,43 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 Toast.makeText(ClassAnnouncementsActivity.this, "Error : " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getPostDetails2() {
+        databaseReference.child(classxxval).child(post_key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ClassAnnouncementsModel classAnnouncementsModel = dataSnapshot.getValue(ClassAnnouncementsModel.class);
+                String url = classAnnouncementsModel.getTitle();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static class ImageURLViewHolder extends RecyclerView.ViewHolder {
+        public View mView;
+
+        public ImageURLViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            mView = itemView;
+
+        }
+
+
+        public void setImageUrl(String imageUrl) {
+
+            PhotoView imageView = mView.findViewById(R.id.imageView_item);
+            Glide.with(mView.getContext()).load(imageUrl).into(imageView);
+
+
+        }
+
+
     }
 
 

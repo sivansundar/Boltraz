@@ -68,19 +68,19 @@
             </RelativeLayout>
 
 
-            <com.alexvasilkov.gestures.views.GestureImageView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/img_recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:id="@+id/imageView"
-                android:scaleType="fitCenter"
-                android:src="@drawable/common_google_signin_btn_icon_dark"
-                android:layout_below="@id/title_holder" />
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_holder">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/imageView"
+                android:layout_above="@id/content_scroll"
                 android:layout_toLeftOf="@id/time_textView"
                 android:paddingTop="20dp"
                 android:text="Posted at "
@@ -91,9 +91,8 @@
                 android:id="@+id/time_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/imageView"
+                android:layout_above="@id/content_scroll"
                 android:layout_alignParentRight="true"
-                android:layout_marginBottom="20dp"
                 android:paddingTop="20dp"
 
                 android:text="12:40"
@@ -106,7 +105,7 @@
                 android:id="@+id/content_scroll"
                 android:layout_width="match_parent"
 
-                android:layout_below="@+id/time_textView">
+                android:layout_below="@+id/img_recyclerView">
 
                 <TextView
                     android:textColor="#eeeeee"

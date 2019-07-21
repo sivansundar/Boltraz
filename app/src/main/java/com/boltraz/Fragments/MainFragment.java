@@ -594,13 +594,13 @@ public class MainFragment extends Fragment {
             postValues.put("author", name);
             postValues.put("postID", key);
             postValues.put("type", announcement_type);
-            //postValues.put("imgURLs", "");
             postValues.put("time", sb.toString());
 
             startPostUpload(postValues, key, classxxx);
 
         }
 
+        uriArrayList.clear();
 
     }
 
