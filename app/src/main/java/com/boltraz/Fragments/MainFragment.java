@@ -515,68 +515,90 @@ public class MainFragment extends Fragment {
             mProgressBar.show();
 
             String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();
-            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxx).child(key).child(String.valueOf(uploadImage.getLastPathSegment()));
+            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxx).child(key);
 
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
 
-            for (int i = 0; i <= uriArrayList.size(); i++) {
+            for (int i = 0; i < uriArrayList.size(); i++) {
                 // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
-            }
-            filePath.putFile(uploadImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        filePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
 
-                                if (task.isSuccessful()) {
-                                    String downloadUrl = task.getResult().toString();
+                Uri imgfile = uriArrayList.get(i).getImageButtonUri();
+                filePath.child(imgfile.getLastPathSegment()).putFile(imgfile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            filePath.child(imgfile.getLastPathSegment()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
 
-                                    Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
-                                    mProgressBar.dismiss();
+                                    if (task.isSuccessful()) {
+                                        String downloadUrl = task.getResult().toString();
 
-
-                                    Calendar calendar = Calendar.getInstance();
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-                                    String time = simpleDateFormat.format(calendar.getTime());
-
-                                    StringBuilder sb = new StringBuilder();
-                                    for (int i = 0; i <= 4; i++) {
-
-                                        sb.append(time.charAt(i));
+                                        Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
+                                        mProgressBar.dismiss();
 
 
+                                        // Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
+
+                                       /* HashMap<String, Object> postValues = new HashMap<String, Object>();
+                                        postValues.put("title", title_text);
+                                        postValues.put("desc", desc_text);
+                                        postValues.put("author", name);
+                                        postValues.put("postID", key);
+                                        postValues.put("type", announcement_type);
+                                        //postValues.put("imgURLs", "");
+                                        postValues.put("time", sb.toString());
+*/
+                                        HashMap<String, Object> downloadurlhash = new HashMap<>();
+                                        downloadurlhash.put("imgUrl", downloadUrl);
+
+
+                                        databaseReference.child("classAnnouncements").child(classxxx).child(key).child("imgURLs").push().setValue(downloadurlhash)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccess: Download url's updated.");
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(getContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
                                     }
-
-                                    Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
-
-                                    HashMap<String, Object> postValues = new HashMap<String, Object>();
-                                    postValues.put("title", title_text);
-                                    postValues.put("desc", desc_text);
-                                    postValues.put("author", name);
-                                    postValues.put("postID", key);
-                                    postValues.put("imgUrl", downloadUrl);
-                                    postValues.put("type", announcement_type);
-                                    postValues.put("time", sb.toString());
-
-
-                                    startPostUpload(postValues, key, classxxx);
-                                } else {
-                                    Toast.makeText(getContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
 
-                        //String downloadUrl = filePath.getDownloadUrl().toString();
+                            //String downloadUrl = filePath.getDownloadUrl().toString();
 
 
-                    } else {
-                        Toast.makeText(getContext(), "Failed ", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                        } else {
+                            Toast.makeText(getContext(), "Failed ", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                        }
                     }
-                }
-            });
+                });
+
+            }
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String time = simpleDateFormat.format(calendar.getTime());
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i <= 4; i++) {
+
+                sb.append(time.charAt(i));
+
+
+            }
+            HashMap<String, Object> postValues = new HashMap<String, Object>();
+            postValues.put("title", title_text);
+            postValues.put("desc", desc_text);
+            postValues.put("author", name);
+            postValues.put("postID", key);
+            postValues.put("type", announcement_type);
+            //postValues.put("imgURLs", "");
+            postValues.put("time", sb.toString());
+
+            startPostUpload(postValues, key, classxxx);
+
         }
 
 
@@ -585,7 +607,7 @@ public class MainFragment extends Fragment {
     private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
 
 
-        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
+        databaseReference.child("classAnnouncements").child(classx).child(key).updateChildren(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(getContext(), "Post added successfully : " + key, Toast.LENGTH_SHORT).show();
