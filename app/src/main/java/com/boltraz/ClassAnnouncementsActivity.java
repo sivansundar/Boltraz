@@ -1,6 +1,7 @@
 package com.boltraz;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import butterknife.OnClick;
 
 public class ClassAnnouncementsActivity extends AppCompatActivity {
 
+    private static final String TAG = "Class Announcements";
     String post_key = "";
     String classxxval = "";
     @BindView(R.id.title_text)
@@ -196,7 +198,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         });
     }
 
-    public static class ImageURLViewHolder extends RecyclerView.ViewHolder {
+    public class ImageURLViewHolder extends RecyclerView.ViewHolder {
         public View mView;
 
         public ImageURLViewHolder(@NonNull View itemView) {
@@ -210,7 +212,23 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         public void setImageUrl(String imageUrl) {
 
             PhotoView imageView = mView.findViewById(R.id.imageView_item);
-            Glide.with(mView.getContext()).load(imageUrl).into(imageView);
+            Glide.with(getApplicationContext()).load(imageUrl).into(imageView);
+
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(ClassAnnouncementsActivity.this, "URL : " + imageUrl, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onClick: URL : " + imageUrl);
+
+
+                    Intent intent = new Intent(ClassAnnouncementsActivity.this, ClassAnnouncement_ImageItem_FullscreenActivity.class);
+                    intent.putExtra("imageURL", imageUrl);
+                    startActivity(intent);
+
+
+                }
+            });
 
 
         }

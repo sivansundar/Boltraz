@@ -11,4 +11,10 @@
 
     <string name="signUp_string">Not registered ? <b>Sign up</b></string>
 
+    <string name="title_activity_class_announcement__image_item__fullscreen">
+        ClassAnnouncement_ImageItem_FullscreenActivity
+    </string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

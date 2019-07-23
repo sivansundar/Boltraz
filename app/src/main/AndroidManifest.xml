@@ -12,7 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SubjectActivity"></activity>
+        <activity
+            android:name=".ClassAnnouncement_ImageItem_FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_class_announcement__image_item__fullscreen"
+            android:theme="@style/FullscreenTheme"></activity>
+        <activity android:name=".SubjectActivity" />
 
         <service
             android:name=".CloudMessaging.FirebaseMessagingService"

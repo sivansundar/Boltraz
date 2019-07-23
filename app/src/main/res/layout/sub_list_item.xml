@@ -15,48 +15,53 @@
             app:strokeWidth="2dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="#673AB7"
+            android:layout_height="250dp"
             android:layout_width="match_parent"
-            android:layout_height="300dp">
+            app:cardBackgroundColor="#002f6c">
             
             <RelativeLayout
                 android:layout_marginTop="50dp"
                 android:id="@+id/cardContentHolder"
                 android:padding="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-                
-                <TextView
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/subject_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Machine Learning"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#fff"/>
+                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_below="@id/subject_title"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/subject_cCode"
-                    android:layout_marginTop="10dp"
-                    android:textSize="16sp"
-                    android:textColor="#fff"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="CSE000"/>
+                    android:layout_alignParentLeft="true">
 
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Prof. XYZQWER"
-                    android:textColor="#fff"
-                    android:layout_marginTop="50dp"
-                    android:layout_below="@id/subject_cCode"
-                    android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/subject_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Machine Learning"
+                        android:textColor="#fff"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/subject_cCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/subject_title"
+                        android:layout_marginTop="10dp"
+                        android:text="CSE000"
+                        android:textColor="#fff"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/subject_cCode"
+                        android:layout_marginTop="50dp"
+                        android:text="Prof. XYZQWER"
+                        android:textColor="#fff" />
+
+
+                </RelativeLayout>
 
 
             </RelativeLayout>

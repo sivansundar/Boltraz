@@ -4,59 +4,60 @@
     android:layout_height="wrap_content"
     android:background="#121212">
 
-    <RelativeLayout
-        android:layout_marginBottom="20dp"
+
+    <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/announ_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="90dp"
+        app:cardBackgroundColor="#000"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
 
-        <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
-            app:cardBackgroundColor="#000"
-            app:cardCornerRadius="8dp"
-            android:layout_centerHorizontal="true"
-            android:layout_width="250dp"
-            android:layout_height="200dp">
-
-            <RelativeLayout
-                android:layout_marginTop="50dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/file_icon_imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/common_google_signin_btn_icon_dark_normal_background">
-
-                </ImageView>
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:padding="20dp"
-                android:layout_gravity="bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp">
+            <LinearLayout
+                android:id="@+id/fileDetailsView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <TextView
                     android:id="@+id/fileName_text"
-                    android:text="FileName"
-                    android:textSize="18sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
                     android:textColor="#fff"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                </TextView>
+                    android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/description_txt_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description 1 2 3 4 5 6 7  8 9 10"
+                    android:textColor="#fafafa"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/fileDetailsView"
+                android:padding="20dp">
+
+
+                <TextView
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:id="@+id/fileSize_text"
-                    android:text="FileSize"
-                    android:textSize="16sp"
+                    android:text="40 MB"
+                    android:textSize="18sp"
                     android:textColor="#fff"
-                    android:layout_below="@+id/fileName_text"
-                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
@@ -64,10 +65,10 @@
 
             </RelativeLayout>
 
-        </com.google.android.material.card.MaterialCardView>
 
+        </RelativeLayout>
 
-    </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
 </LinearLayout>

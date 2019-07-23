@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,6 @@ import com.boltraz.Model.NoteModel;
 import com.boltraz.Model.SubjectModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
@@ -81,7 +79,7 @@ public class SubjectActivity extends AppCompatActivity {
 
         notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recyclerView);
         notesRecyclerView.setHasFixedSize(true);
-        notesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        notesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
