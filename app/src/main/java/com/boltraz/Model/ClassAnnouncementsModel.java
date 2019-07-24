@@ -10,19 +10,23 @@ public class ClassAnnouncementsModel {
     private String author;
     private String imgUrl;
     private String time;
+    public String date;
+
 
 
     public ClassAnnouncementsModel() {
 
     }
 
-    public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl, String time) {
+    public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl, String time, String date) {
         this.title = title;
         this.desc = desc;
         this.postID = postID;
         this.author = author;
         this.imgUrl = imgUrl;
         this.time = time;
+        this.date = date;
+
 
     }
 
@@ -56,6 +60,14 @@ public class ClassAnnouncementsModel {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getTitle() {

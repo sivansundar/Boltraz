@@ -64,7 +64,9 @@ import com.vansuita.pickimage.listeners.IPickResult;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -459,6 +461,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+
                 PickImageDialog.build(setup, new IPickResult() {
                     @Override
                     public void onPickResult(PickResult pickResult) {
@@ -494,8 +497,16 @@ public class MainFragment extends Fragment {
                 String desc = desc_editText.getText().toString();
                 String classx = sharedPreferences.getString("classxx", "SSS");
 
+
                 Log.d(TAG, "onClick: CLASSX : ALERT DIALOG" + classx);
-                startImageUpload(title, desc, classx);
+
+                if (title.isEmpty() || desc.isEmpty()) {
+                    Toast.makeText(getContext(), "Your Title or Description is missing. Say something!", Toast.LENGTH_LONG).show();
+                } else {
+
+                    startImageUpload(title, desc, classx);
+
+                }
 
             }
         });
@@ -519,10 +530,39 @@ public class MainFragment extends Fragment {
 
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
 
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String time = simpleDateFormat.format(calendar.getTime());
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i <= 4; i++) {
+
+                sb.append(time.charAt(i));
+
+
+            }
+
+            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            Log.d(TAG, "onClick: DATE : " + date);
+
+
+            HashMap<String, Object> postValues = new HashMap<String, Object>();
+            postValues.put("title", title_text);
+            postValues.put("desc", desc_text);
+            postValues.put("author", name);
+            postValues.put("postID", key);
+            postValues.put("type", announcement_type);
+            postValues.put("date", date);
+            postValues.put("time", sb.toString());
+
+            startPostUpload(postValues, key, classxxx);
+
             for (int i = 0; i < uriArrayList.size(); i++) {
                 // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
 
                 Uri imgfile = uriArrayList.get(i).getImageButtonUri();
+
+                Log.d(TAG, "startImageUpload: IMAGE URI AT uriList[" + i + "] is : " + imgfile.toString());
                 filePath.child(imgfile.getLastPathSegment()).putFile(imgfile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -535,7 +575,6 @@ public class MainFragment extends Fragment {
                                         String downloadUrl = task.getResult().toString();
 
                                         Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
-                                        mProgressBar.dismiss();
 
 
                                         // Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
@@ -558,6 +597,16 @@ public class MainFragment extends Fragment {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "onSuccess: Download url's updated.");
+
+                                                        Toast.makeText(getContext(), "Download URLs updated : " + key, Toast.LENGTH_SHORT).show();
+
+                                                        Snackbar snackbar = Snackbar
+                                                                .make(rootView, "Image uploaded successfully", Snackbar.LENGTH_LONG);
+
+                                                        snackbar.show();
+
+                                                        mProgressBar.dismiss();
+
                                                     }
                                                 });
                                     } else {
@@ -577,26 +626,8 @@ public class MainFragment extends Fragment {
                 });
 
             }
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-            String time = simpleDateFormat.format(calendar.getTime());
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= 4; i++) {
-
-                sb.append(time.charAt(i));
 
 
-            }
-            HashMap<String, Object> postValues = new HashMap<String, Object>();
-            postValues.put("title", title_text);
-            postValues.put("desc", desc_text);
-            postValues.put("author", name);
-            postValues.put("postID", key);
-            postValues.put("type", announcement_type);
-            postValues.put("time", sb.toString());
-
-            startPostUpload(postValues, key, classxxx);
 
         }
 
@@ -607,15 +638,10 @@ public class MainFragment extends Fragment {
     private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
 
 
-        databaseReference.child("classAnnouncements").child(classx).child(key).updateChildren(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
+        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(getContext(), "Post added successfully : " + key, Toast.LENGTH_SHORT).show();
 
-                Snackbar snackbar = Snackbar
-                        .make(rootView, "Announcement posted successfully", Snackbar.LENGTH_LONG);
-
-                snackbar.show();
 
             }
         })
@@ -624,6 +650,34 @@ public class MainFragment extends Fragment {
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), "Failed to add post : " + key, Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "onFailure: failed to add post : ", e);
+
+                        mProgressBar.dismiss();
+
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getContext(), "Post added successfully. Uploading Images : " + key, Toast.LENGTH_SHORT).show();
+
+
+                        }
+
+                        if (task.isCanceled()) {
+                            Toast.makeText(getContext(), "Operation Cancelled : ", Toast.LENGTH_SHORT).show();
+                        }
+
+                        if (task.isComplete()) {
+                            Toast.makeText(getContext(), "Complete", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Upload failed! : " + e, Toast.LENGTH_SHORT).show();
                     }
                 });
 

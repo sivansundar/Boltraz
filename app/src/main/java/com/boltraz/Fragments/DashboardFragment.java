@@ -31,6 +31,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -60,6 +62,7 @@ public class DashboardFragment extends Fragment {
     public ProgressDialog progressDialog;
 
     public SharedPreferences preferences;
+    public String day;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -69,6 +72,9 @@ public class DashboardFragment extends Fragment {
     public String UID = "";
     public String userName = "";
     public String usn = "";
+    @BindView(R.id.good_day_text)
+    TextView good_day_text;
+
     @BindView(R.id.usn_text)
     TextView usn_text;
     private FirebaseDatabase firebaseDatabase;
@@ -136,11 +142,37 @@ public class DashboardFragment extends Fragment {
         profileName.setText(name);
         usn_text.setText(usn);
 
+        //getTimeOfDay();
         //  getUserDetails();
 
         //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
         return view;
+    }
+
+    public void getTimeOfDay() {
+        Calendar c = Calendar.getInstance();
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+
+        int a = c.get(Calendar.AM_PM);
+
+        Log.d(TAG, "getTimeOfDay: " + timeOfDay + " : AMPM : " + a + " : Calender : ");
+
+        if (timeOfDay >= 0 && timeOfDay < 12) {
+            day = "Good Morning";
+            Toast.makeText(getContext(), "Good Morning", Toast.LENGTH_SHORT).show();
+        } else if (timeOfDay >= 12 && timeOfDay < 16) {
+            day = "Good Afternoon";
+            Toast.makeText(getContext(), "Good Afternoon", Toast.LENGTH_SHORT).show();
+        } else if (timeOfDay >= 16 && timeOfDay < 21) {
+            day = "Good Evening";
+            Toast.makeText(getContext(), "Good Evening", Toast.LENGTH_SHORT).show();
+        } else if (timeOfDay >= 21 && timeOfDay < 24) {
+            day = "Good Night";
+            Toast.makeText(getContext(), "Good Night", Toast.LENGTH_SHORT).show();
+        }
+
+        //good_day_text.setText(day);
     }
 
     private void getUserDetails() {
@@ -204,7 +236,6 @@ public class DashboardFragment extends Fragment {
                 }, 3000);
 
 
-
             }
         });
 
@@ -212,37 +243,37 @@ public class DashboardFragment extends Fragment {
 
     }
 
-   /* public void setupFirebaseListener() {
-        Log.d(TAG, "setupFirebaseListener: Setting up Firebase AuthStateListener");
+    /* public void setupFirebaseListener() {
+         Log.d(TAG, "setupFirebaseListener: Setting up Firebase AuthStateListener");
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user!=null) {
-                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed in");
-                }
-                else {
-                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed out");
-                    progressDialog.setTitle("Sign out");
-                    progressDialog.setMessage("Signing you out " + user.getDisplayName());
-                    progressDialog.show();
-                    Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
+         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+             @Override
+             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                 FirebaseUser user = firebaseAuth.getCurrentUser();
+                 if (user!=null) {
+                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed in");
+                 }
+                 else {
+                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed out");
+                     progressDialog.setTitle("Sign out");
+                     progressDialog.setMessage("Signing you out " + user.getDisplayName());
+                     progressDialog.show();
+                     Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressDialog.dismiss();
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                        }
-                    }, 3000);
-                }
-            }
-        };
-    }*/
+                     Handler handler = new Handler();
+                     handler.postDelayed(new Runnable() {
+                         @Override
+                         public void run() {
+                             progressDialog.dismiss();
+                             Intent intent = new Intent(getActivity(), LoginActivity.class);
+                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                             startActivity(intent);
+                         }
+                     }, 3000);
+                 }
+             }
+         };
+     }*/
     @Override
     public void onStop() {
         super.onStop();
@@ -255,10 +286,8 @@ public class DashboardFragment extends Fragment {
         super.onStart();
 
 
-
         //Uri url = mAuth.getCurrentUser().getPhotoUrl();
         //Glide.with(getContext()).load(url).into(profilePictureImg);
-
 
 
     }
@@ -292,7 +321,6 @@ public class DashboardFragment extends Fragment {
         super.onDestroyView();
         mUnbinder.unbind();
     }
-
 
 
     /**

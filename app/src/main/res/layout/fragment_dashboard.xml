@@ -29,32 +29,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/profile_picture_img"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/baseline_account_circle_black_48"
+                    app:civ_border_color="#EEEEEE"
+                    app:civ_shadow_color="#8BC34A" />
+
                 <RelativeLayout
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_marginTop="100dp">
 
 
-                    <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/profile_picture_img"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/googleg_standard_color_18"
-                        app:civ_border_color="#EEEEEE"
-                        app:civ_shadow_color="#8BC34A" />
+                    <TextView
+                        android:id="@+id/good_day_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Hello,"
+                        android:textColor="#fff"
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/profile_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_picture_img"
-                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/good_day_text"
                         android:text="Sivan Chakravarthy"
-                        android:textAlignment="center"
                         android:textColor="#fff"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -62,7 +68,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/profile_name"
-                        android:layout_centerHorizontal="true"
                         android:text="1NH16CSXXX"
                         android:textColor="#fff" />
 

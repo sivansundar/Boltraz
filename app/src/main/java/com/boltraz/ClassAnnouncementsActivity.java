@@ -1,5 +1,6 @@
 package com.boltraz;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -67,6 +68,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
     String title, desc, author;
 
+    private android.app.ProgressDialog mProgressBar;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +94,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         imgRecyclerView.setHasFixedSize(true);
         imgRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
 
+        mProgressBar = new ProgressDialog(this);
+
+
         getPostImages(post_key, classxxval);
 
 
@@ -105,6 +112,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     }
 
     private void getPostImages(String post_key, String classxxval) {
+
+        //  mProgressBar.setMessage("Loading.....");
+
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
@@ -124,8 +134,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull ImageURLViewHolder imageURLViewHolder, int i, @NonNull ImageURLModel imageURLModel) {
 
                 String imageUrl = imageURLModel.getImgUrl();
-
                 imageURLViewHolder.setImageUrl(imageUrl);
+
 
 
             }
@@ -163,6 +173,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 String desc_text = model.getDesc();
                 String author_text = model.getauthor();
                 String time = model.getTime();
+                String date = model.getDate();
+
 
                 Log.d("CLASSANNOUNCEMENTS : ", "onDataChange: VAL : " + title);
                 //Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
@@ -172,7 +184,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 descText.setText(desc_text);
                 authorChip.setText(author_text);
                 timeTextView.setText(time);
-
+                dateText.setText(date);
 
             }
 
