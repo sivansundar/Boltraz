@@ -14,22 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.boltraz.LoginActivity;
-import com.boltraz.Model.UserModel;
 import com.boltraz.R;
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.Calendar;
 
@@ -51,10 +47,7 @@ public class DashboardFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    @BindView(R.id.profile_picture_img)
-    CircularImageView profilePictureImg;
-    @BindView(R.id.profile_name)
-    TextView profileName;
+    public String dp_url;
     public static final String TAG = "Dashboard Fragment";
     @BindView(R.id.logout_btn)
     Button logout_btn;
@@ -63,6 +56,10 @@ public class DashboardFragment extends Fragment {
 
     public SharedPreferences preferences;
     public String day;
+    //  @BindView(R.id.profile_picture_img)
+    // CircularImageView profilePictureImg;
+    @BindView(R.id.profile_name)
+    TextView profileName;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -72,8 +69,9 @@ public class DashboardFragment extends Fragment {
     public String UID = "";
     public String userName = "";
     public String usn = "";
-    @BindView(R.id.good_day_text)
-    TextView good_day_text;
+    @BindView(R.id.profile_picture)
+    ImageView profile_picture;
+
 
     @BindView(R.id.usn_text)
     TextView usn_text;
@@ -119,17 +117,20 @@ public class DashboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        profilePictureImg = view.findViewById(R.id.profile_picture_img);
+        //  profilePictureImg = view.findViewById(R.id.profile_picture_img);
         profileName = view.findViewById(R.id.profile_name);
 
         progressDialog = new ProgressDialog(getContext());
 
+        profile_picture = view.findViewById(R.id.profile_picture);
         preferences = getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
 
         String name = preferences.getString("name", "XXX");
         String usn = preferences.getString("usn", "1NH16CSXXX");
+        dp_url = preferences.getString("dp_url", "XXX");
+        String dept = preferences.getString("dept", "N/a");
 
-        Toast.makeText(getContext(), "XXX : " + name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "DP URL : " + dp_url, Toast.LENGTH_SHORT).show();
 
         mAuth = FirebaseAuth.getInstance();
         if (UID.isEmpty()) {
@@ -140,10 +141,11 @@ public class DashboardFragment extends Fragment {
 
         usn_text = (TextView) view.findViewById(R.id.usn_text);
         profileName.setText(name);
-        usn_text.setText(usn);
+        usn_text.setText(usn + " • " + dept);
 
         //getTimeOfDay();
-        //  getUserDetails();
+
+        getDP(dp_url);
 
         //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
@@ -175,33 +177,14 @@ public class DashboardFragment extends Fragment {
         //good_day_text.setText(day);
     }
 
-    private void getUserDetails() {
+    public void getDP(String profile_pic_url) {
        /* Uri url = mAuth.getCurrentUser().getPhotoUrl();
         Glide.with(getContext()).load(url).into(profilePictureImg);
 */
-        if (userName.isEmpty()) {
-            databaseReference.child("students/semester7/").child(UID).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    UserModel user = dataSnapshot.getValue(UserModel.class);
-                    usn = user.getUSN();
-                    userName = user.getName();
-
-                    profileName.setText(userName);
-                    usn_text.setText(usn);
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    Toast.makeText(getContext(), "We have a problem! Check the log", Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "onCancelled: onStart() : ", databaseError.toException());
-                }
-            });
-
+        if (!profile_pic_url.isEmpty()) {
+            Glide.with(getContext()).load(profile_pic_url).into(profile_picture);
         }
+
     }
 
     @OnClick(R.id.logout_btn)
