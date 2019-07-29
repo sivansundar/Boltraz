@@ -241,14 +241,13 @@ public class MainFragment extends Fragment {
 
 
 
-
-
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
 
         databaseReference.child("students").child(userID).addValueEventListener(new ValueEventListener() {
             @SuppressLint("RestrictedApi")
@@ -287,6 +286,7 @@ public class MainFragment extends Fragment {
                 addAnnouncement_fab = rootView.findViewById(R.id.addAnnouncement_fab);
 
                 Log.d(TAG, "onDataChange: " + classrep + " : CLASSXX : " + classxx);
+
                 if (classrep.equalsIgnoreCase("yes")) {
                     addAnnouncement_fab.setVisibility(View.VISIBLE);
                 } else {
@@ -310,6 +310,7 @@ public class MainFragment extends Fragment {
 
     private void getToDoCount() {
 
+
         databaseReference.child("students").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -318,6 +319,7 @@ public class MainFragment extends Fragment {
                 if (todoSize > 0) {
                     todoNumber_label.setText("" + todoSize);
                 }
+
             }
 
             @Override
@@ -334,6 +336,9 @@ public class MainFragment extends Fragment {
         Glide.with(getContext()).load(url).into(circleImageView);*/
 
         if (name.isEmpty()) {
+            mProgressBar.setMessage("Loading");
+            mProgressBar.show();
+
             databaseReference.child("students").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -344,6 +349,8 @@ public class MainFragment extends Fragment {
                     //Toast.makeText(getContext(), "Class rep : " + classrep, Toast.LENGTH_SHORT).show();
                     name = user.getName();
                     labelName.setText(name);
+
+                    mProgressBar.dismiss();
                 }
 
                 @Override

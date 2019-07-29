@@ -6,9 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
+
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
@@ -21,6 +22,12 @@
 
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="MyOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">#FFF</item>
+        <item name="android:windowNoTitle">true</item>
+
     </style>
 
 

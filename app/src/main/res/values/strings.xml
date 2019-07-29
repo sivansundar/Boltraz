@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Boltraz</string>
+    <!--  <string name="app_name">Boltraz</string>-->
+
     <string name="email_suffix">\u0040boltraz.com</string>
 
     <!-- TODO: Remove or change this placeholder text -->

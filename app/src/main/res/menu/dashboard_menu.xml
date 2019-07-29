@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="example.javatpoint.com.optionmenu.MainActivity">
+
+    <item
+        android:id="@+id/change_profile_pic_item"
+        android:title="Edit Profile Picture" />
+    <item
+        android:id="@+id/about_item"
+        android:title="About" />
+    <item
+        android:id="@+id/logout_item"
+        android:title="Logout"
+        app:showAsAction="withText" />
+</menu>

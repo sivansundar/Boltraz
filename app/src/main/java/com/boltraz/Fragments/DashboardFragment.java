@@ -6,26 +6,48 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.boltraz.LoginActivity;
 import com.boltraz.R;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.enums.EPickType;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import java.util.Calendar;
 
@@ -78,6 +100,11 @@ public class DashboardFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
+    public Toolbar toolbar;
+    public PickSetup setup;
+    private FirebaseStorage mStorage;
+    private StorageReference mStorageReference;
+
     private OnFragmentInteractionListener mListener;
     private Unbinder mUnbinder;
 
@@ -110,6 +137,8 @@ public class DashboardFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -138,6 +167,9 @@ public class DashboardFragment extends Fragment {
         }
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+        mStorage = FirebaseStorage.getInstance();
+        mStorageReference = mStorage.getReference();
+
 
         usn_text = (TextView) view.findViewById(R.id.usn_text);
         profileName.setText(name);
@@ -147,9 +179,165 @@ public class DashboardFragment extends Fragment {
 
         getDP(dp_url);
 
+        setup = new PickSetup()
+                .setTitle("Title")
+                .setTitleColor(Color.BLACK)
+                .setBackgroundColor(Color.WHITE)
+                .setProgressText("On it")
+                .setProgressTextColor(Color.GREEN)
+                .setCancelText("Cancel")
+                .setFlip(true)
+                .setMaxSize(500)
+                .setPickTypes(EPickType.GALLERY, EPickType.CAMERA)
+                .setCameraButtonText("Camera")
+                .setGalleryButtonText("Gallery")
+                .setIconGravity(Gravity.LEFT)
+                .setButtonOrientation(LinearLayout.VERTICAL)
+                .setSystemDialog(false);
+
+
+        toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
         //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.dashboard_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.change_profile_pic_item:
+                changeDPOption(UID);
+                Toast.makeText(getContext(), "Edit Profile picture", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.about_item:
+                Toast.makeText(getContext(), "About item", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.logout_item:
+                logout();
+                //Toast.makeText(getContext(), "Logout item", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setTitle("Logout?");
+        alertDialogBuilder.setMessage("Are you sure you want to log out of Boltraz?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                Log.d(TAG, "onAuthStateChanged: " + mAuth.getCurrentUser().getDisplayName() + " is signed out");
+                progressDialog.setTitle("Sign out");
+                progressDialog.setMessage("Signing you out " + mAuth.getCurrentUser().getDisplayName());
+                progressDialog.show();
+                Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        FirebaseAuth.getInstance().signOut();
+
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                }, 3000);
+
+
+            }
+        });
+
+        alertDialogBuilder.show();
+
+    }
+
+    private void changeDPOption(String uid) {
+
+        PickImageDialog.build(setup, new IPickResult() {
+            @Override
+            public void onPickResult(PickResult pickResult) {
+
+                Uri dp_imageUri = pickResult.getUri();
+                StorageReference filePath = mStorage.getReference().child("users").child(uid).child("userpic.jpg");
+                filePath.putFile(dp_imageUri).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.setMessage("Updating your profile picture");
+                        progressDialog.show();
+                    }
+                })
+                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                progressDialog.dismiss();
+
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Success!", Toast.LENGTH_SHORT).show();
+                                    Glide.with(getContext()).load(dp_imageUri).into(profile_picture);
+
+                                    filePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            String dp_url = task.getResult().toString();
+                                            updateDPUrl(UID, dp_url);
+
+                                        }
+                                    })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getContext(), "Failed to update : " + e, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+                                } else {
+                                    Toast.makeText(getContext(), "Failed! : " + task.getException(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+
+            }
+        }).show(getFragmentManager());
+    }
+
+    private void updateDPUrl(String uid, String dp_url) {
+        databaseReference.child("students").child(uid).child("dp_url").setValue(dp_url).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getContext(), "DP Url updated! ", Toast.LENGTH_SHORT).show();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Failed to update url", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     public void getTimeOfDay() {
@@ -226,37 +414,7 @@ public class DashboardFragment extends Fragment {
 
     }
 
-    /* public void setupFirebaseListener() {
-         Log.d(TAG, "setupFirebaseListener: Setting up Firebase AuthStateListener");
 
-         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-             @Override
-             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                 if (user!=null) {
-                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed in");
-                 }
-                 else {
-                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName() + " is signed out");
-                     progressDialog.setTitle("Sign out");
-                     progressDialog.setMessage("Signing you out " + user.getDisplayName());
-                     progressDialog.show();
-                     Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
-
-                     Handler handler = new Handler();
-                     handler.postDelayed(new Runnable() {
-                         @Override
-                         public void run() {
-                             progressDialog.dismiss();
-                             Intent intent = new Intent(getActivity(), LoginActivity.class);
-                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                             startActivity(intent);
-                         }
-                     }, 3000);
-                 }
-             }
-         };
-     }*/
     @Override
     public void onStop() {
         super.onStop();
