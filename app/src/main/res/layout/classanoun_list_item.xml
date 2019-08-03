@@ -32,7 +32,7 @@
             <TextView
                 android:textColor="#fafafa"
                 android:id="@+id/description_txt_list"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="18dp"
                 android:text="Description 1 2 3 4 5 6 7  8 9 10"
                 android:textSize="14sp" />

@@ -16,7 +16,7 @@
             android:name=".ClassAnnouncement_ImageItem_FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_class_announcement__image_item__fullscreen"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
         <activity android:name=".SubjectActivity" />
 
         <service

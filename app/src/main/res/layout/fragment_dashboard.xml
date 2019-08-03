@@ -17,7 +17,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/MyOverflowButtonStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:background="#121212">
 
@@ -117,6 +117,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/settings_options_recyclerView"
+            android:layout_above="@+id/footer_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/nameholder_card">
@@ -125,17 +126,9 @@
 
         <RelativeLayout
             android:layout_alignParentBottom="true"
-
+            android:id="@+id/footer_holder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.button.MaterialButton
-                    android:visibility="invisible"
-                    android:id="@+id/logout_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="60dp"
-                    android:text="Logout"/>
+            android:layout_height="60dp">
 
         </RelativeLayout>
 

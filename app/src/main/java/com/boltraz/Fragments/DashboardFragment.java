@@ -18,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,7 +27,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.boltraz.ListAdapter.SettingsAdapter;
 import com.boltraz.LoginActivity;
 import com.boltraz.R;
 import com.bumptech.glide.Glide;
@@ -49,11 +51,11 @@ import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
 import com.vansuita.pickimage.listeners.IPickResult;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -71,8 +73,7 @@ public class DashboardFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     public String dp_url;
     public static final String TAG = "Dashboard Fragment";
-    @BindView(R.id.logout_btn)
-    Button logout_btn;
+
 
     public ProgressDialog progressDialog;
 
@@ -82,7 +83,10 @@ public class DashboardFragment extends Fragment {
     // CircularImageView profilePictureImg;
     @BindView(R.id.profile_name)
     TextView profileName;
-
+    public ArrayList<String> settingsArrayList;
+    public SettingsAdapter settingsAdapter;
+    @BindView(R.id.settings_options_recyclerView)
+    RecyclerView settingsOptionsRecyclerView;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -195,6 +199,15 @@ public class DashboardFragment extends Fragment {
                 .setButtonOrientation(LinearLayout.VERTICAL)
                 .setSystemDialog(false);
 
+        settingsArrayList = new ArrayList<>();
+        settingsArrayList.add("Calender of Events");
+        settingsArrayList.add("Faculty list");
+        settingsAdapter = new SettingsAdapter(settingsArrayList);
+
+        settingsOptionsRecyclerView = (RecyclerView) view.findViewById(R.id.settings_options_recyclerView);
+        settingsOptionsRecyclerView.setHasFixedSize(true);
+        settingsOptionsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        settingsOptionsRecyclerView.setAdapter(settingsAdapter);
 
         toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -372,45 +385,6 @@ public class DashboardFragment extends Fragment {
         if (!profile_pic_url.isEmpty()) {
             Glide.with(getContext()).load(profile_pic_url).into(profile_picture);
         }
-
-    }
-
-    @OnClick(R.id.logout_btn)
-    public void onLogout_btnClicked() {
-        //TODO: add click handling
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setTitle("Logout?");
-        alertDialogBuilder.setMessage("Are you sure you want to log out of Boltraz?");
-        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-
-                Log.d(TAG, "onAuthStateChanged: " + mAuth.getCurrentUser().getDisplayName() + " is signed out");
-                progressDialog.setTitle("Sign out");
-                progressDialog.setMessage("Signing you out " + mAuth.getCurrentUser().getDisplayName());
-                progressDialog.show();
-                Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressDialog.dismiss();
-                        FirebaseAuth.getInstance().signOut();
-
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                }, 3000);
-
-
-            }
-        });
-
-        alertDialogBuilder.show();
 
     }
 
