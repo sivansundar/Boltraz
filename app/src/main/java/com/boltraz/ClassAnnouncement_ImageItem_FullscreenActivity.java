@@ -1,8 +1,11 @@
 package com.boltraz;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -29,6 +32,8 @@ public class ClassAnnouncement_ImageItem_FullscreenActivity extends AppCompatAct
      * user interaction before hiding the system UI.
      */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+
+    public SharedPreferences sharedPreferences;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -99,9 +104,20 @@ public class ClassAnnouncement_ImageItem_FullscreenActivity extends AppCompatAct
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
+        sharedPreferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+        String url = sharedPreferences.getString("coe_url", "XXX");
         imageurl = getIntent().getStringExtra("imageURL");
+
+        if (imageurl != null) {
+            Glide.with(getApplicationContext()).load(imageurl).into(mContentView);
+
+        } else {
+            String coe = getIntent().getStringExtra("coeurl");
+            Glide.with(getApplicationContext()).load(url).into(mContentView);
+
+            Log.d("ClassannounFullscreen", "onCreate: URL : " + url);
+        }
         Toast.makeText(this, "URL : " + imageurl, Toast.LENGTH_SHORT).show();
-        Glide.with(getApplicationContext()).load(imageurl).into(mContentView);
 
 
         // Set up the user interaction to manually show or hide the system UI.

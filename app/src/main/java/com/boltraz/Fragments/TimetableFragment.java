@@ -220,6 +220,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         };
 
         timeTableRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        timeTableRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+
         firebaseRecyclerAdapter.startListening();
 
         //Implement Firebase Recycler Adapter

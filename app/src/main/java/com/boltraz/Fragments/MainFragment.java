@@ -337,6 +337,7 @@ public class MainFragment extends Fragment {
 
         if (name.isEmpty()) {
             mProgressBar.setMessage("Loading");
+            mProgressBar.setCancelable(false);
             mProgressBar.show();
 
             databaseReference.child("students").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -355,6 +356,7 @@ public class MainFragment extends Fragment {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    mProgressBar.dismiss();
 
                     Toast.makeText(getContext(), "We have a problem! Check the log", Toast.LENGTH_LONG).show();
                     Log.e(TAG, "onCancelled: getDP() : ", databaseError.toException());

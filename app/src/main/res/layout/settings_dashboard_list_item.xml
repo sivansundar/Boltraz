@@ -24,7 +24,7 @@
                 android:padding="10dp"
                 android:text="ABCD"
                 android:textColor="#fff"
-                android:textSize="20sp">
+                android:textSize="18sp">
 
             </TextView>
 

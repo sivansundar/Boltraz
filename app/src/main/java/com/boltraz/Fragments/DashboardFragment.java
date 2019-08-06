@@ -39,8 +39,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -78,6 +81,7 @@ public class DashboardFragment extends Fragment {
     public ProgressDialog progressDialog;
 
     public SharedPreferences preferences;
+    public SharedPreferences.Editor editor;
     public String day;
     //  @BindView(R.id.profile_picture_img)
     // CircularImageView profilePictureImg;
@@ -93,6 +97,7 @@ public class DashboardFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     public String UID = "";
+    private String coe_url = "";
     public String userName = "";
     public String usn = "";
     @BindView(R.id.profile_picture)
@@ -163,6 +168,7 @@ public class DashboardFragment extends Fragment {
         dp_url = preferences.getString("dp_url", "XXX");
         String dept = preferences.getString("dept", "N/a");
 
+
         Toast.makeText(getContext(), "DP URL : " + dp_url, Toast.LENGTH_SHORT).show();
 
         mAuth = FirebaseAuth.getInstance();
@@ -199,10 +205,13 @@ public class DashboardFragment extends Fragment {
                 .setButtonOrientation(LinearLayout.VERTICAL)
                 .setSystemDialog(false);
 
+        String url = getCoeUrl();
+
         settingsArrayList = new ArrayList<>();
         settingsArrayList.add("Calender of Events");
         settingsArrayList.add("Faculty list");
         settingsAdapter = new SettingsAdapter(settingsArrayList);
+        Log.d(TAG, "onCreateView: onCreateView : geTCOE : " + url);
 
         settingsOptionsRecyclerView = (RecyclerView) view.findViewById(R.id.settings_options_recyclerView);
         settingsOptionsRecyclerView.setHasFixedSize(true);
@@ -215,6 +224,30 @@ public class DashboardFragment extends Fragment {
         //setupFirebaseListener();
         mUnbinder = ButterKnife.bind(this, view);
         return view;
+    }
+
+    private String getCoeUrl() {
+
+        editor = preferences.edit();
+
+
+        databaseReference.child("misc").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                coe_url = dataSnapshot.child("coe_url").getValue().toString();
+                Log.d(TAG, "onDataChange: getCOEURL : " + coe_url);
+
+                editor.putString("coe_url", coe_url);
+                editor.commit();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return coe_url;
     }
 
     @Override
