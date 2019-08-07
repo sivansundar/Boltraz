@@ -490,6 +490,10 @@ public class MainFragment extends Fragment {
                             imageButton.setImageURI(pickResult.getUri());
 
 
+                        } else {
+
+                            Toast.makeText(getContext(), "Sorry. Could not select this image. ERROR Status : " + pickResult.getError(), Toast.LENGTH_LONG).show();
+
                         }
                     }
                 }).show(getFragmentManager());
@@ -519,7 +523,20 @@ public class MainFragment extends Fragment {
                     Toast.makeText(getContext(), "Your Title or Description is missing. Say something!", Toast.LENGTH_LONG).show();
                 } else {
 
-                    startImageUpload(title, desc, classx);
+                    String post_key = databaseReference.child("classAnnouncements").child(classx).push().getKey();
+
+                    HashMap<String, Object> postValues = new HashMap<String, Object>();
+                    postValues.put("title", title);
+                    postValues.put("desc", desc);
+                    postValues.put("author", name);
+                    postValues.put("postID", post_key);
+                    postValues.put("type", announcement_type);
+                    postValues.put("date", getDate());
+                    postValues.put("time", getTime());
+
+                    startPostUpload(postValues, post_key, classx);
+
+                    //startImageUpload(title, desc, classx);
 
                 }
 
@@ -530,22 +547,46 @@ public class MainFragment extends Fragment {
 
     }
 
-    private void startImageUpload(String title_text, String desc_text, String classxxx) {
+    private String getTime() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String time = simpleDateFormat.format(calendar.getTime());
 
-        Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= 4; i++) {
+
+            sb.append(time.charAt(i));
 
 
-        if (title_text != null && desc_text != null) {
+        }
+
+        String currentTime = sb.toString();
+
+        return currentTime;
+    }
+
+    private String getDate() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        Log.d(TAG, "onClick: DATE : " + date);
+
+        return date;
+    }
+
+    private void startImageUpload(String post_key, String classxxxVal) {
+
+        //  Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
+
+
 
             mProgressBar.setMessage("Posting...");
             mProgressBar.show();
 
-            String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();
-            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxx).child(key);
+        /*String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();*/
+        StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
 
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
 
-            Calendar calendar = Calendar.getInstance();
+           /* Calendar calendar = Calendar.getInstance();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             String time = simpleDateFormat.format(calendar.getTime());
 
@@ -570,7 +611,7 @@ public class MainFragment extends Fragment {
             postValues.put("date", date);
             postValues.put("time", sb.toString());
 
-            startPostUpload(postValues, key, classxxx);
+            startPostUpload(postValues, key, classxxx);*/
 
             for (int i = 0; i < uriArrayList.size(); i++) {
                 // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
@@ -607,13 +648,13 @@ public class MainFragment extends Fragment {
                                         downloadurlhash.put("imgUrl", downloadUrl);
 
 
-                                        databaseReference.child("classAnnouncements").child(classxxx).child(key).child("imgURLs").push().setValue(downloadurlhash)
+                                        databaseReference.child("classAnnouncements").child(classxxxVal).child(post_key).child("imgURLs").push().setValue(downloadurlhash)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "onSuccess: Download url's updated.");
 
-                                                        Toast.makeText(getContext(), "Download URLs updated : " + key, Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
 
                                                         Snackbar snackbar = Snackbar
                                                                 .make(rootView, "Image uploaded successfully", Snackbar.LENGTH_LONG);
@@ -644,7 +685,7 @@ public class MainFragment extends Fragment {
 
 
 
-        }
+
 
         uriArrayList.clear();
 
@@ -653,39 +694,19 @@ public class MainFragment extends Fragment {
     private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
 
 
-        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failed to add post : " + key, Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onFailure: failed to add post : ", e);
-
-                        mProgressBar.dismiss();
-
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(getContext(), "Post added successfully. Uploading Images : " + key, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
 
+                            if (!uriArrayList.isEmpty()) {
+                                Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                                startImageUpload(key, classx);
+                            }
 
                         }
 
-                        if (task.isCanceled()) {
-                            Toast.makeText(getContext(), "Operation Cancelled : ", Toast.LENGTH_SHORT).show();
-                        }
-
-                        if (task.isComplete()) {
-                            Toast.makeText(getContext(), "Complete", Toast.LENGTH_SHORT).show();
-                        }
 
                     }
                 })

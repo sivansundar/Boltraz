@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/imageView_item"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/colorWhiteTransparent"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_gravity="center_horizontal"
-        android:paddingRight="20dp"
-        android:src="@drawable/common_google_signin_btn_icon_dark"
-        android:scaleType="fitCenter">
+        app:strokeWidth="2dp">
 
-    </com.github.chrisbanes.photoview.PhotoView>
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/imageView_item"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:paddingRight="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/common_google_signin_btn_icon_dark">
+
+        </com.github.chrisbanes.photoview.PhotoView>
+
+
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
