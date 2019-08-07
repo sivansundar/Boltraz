@@ -266,6 +266,8 @@ public class MainFragment extends Fragment {
 
                 String dept = userModel.getDept();
 
+                String email = userModel.getEmail();
+
                 // The shared prefs work perfectly fine. Use that to save values.
                 String classxx = "Class" + userModel.getClasssection();
 
@@ -275,6 +277,7 @@ public class MainFragment extends Fragment {
                 editor.putString("usn", usn);
                 editor.putString("dp_url", dp_url);
                 editor.putString("dept", dept);
+                editor.putString("email", email);
                 editor.apply();
 
 

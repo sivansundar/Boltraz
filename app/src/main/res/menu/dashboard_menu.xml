@@ -8,9 +8,15 @@
     <item
         android:id="@+id/change_profile_pic_item"
         android:title="Edit Profile Picture" />
+
+    <item
+        android:id="@+id/edit_password_item"
+        android:title="Edit your password" />
+
     <item
         android:id="@+id/about_item"
         android:title="About" />
+
     <item
         android:id="@+id/logout_item"
         android:title="Logout"

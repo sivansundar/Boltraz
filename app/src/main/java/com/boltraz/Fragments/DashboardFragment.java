@@ -269,6 +269,9 @@ public class DashboardFragment extends Fragment {
                 Toast.makeText(getContext(), "About item", Toast.LENGTH_SHORT).show();
                 break;
 
+            case R.id.edit_password_item:
+                editPassword();
+                break;
             case R.id.logout_item:
                 logout();
                 //Toast.makeText(getContext(), "Logout item", Toast.LENGTH_SHORT).show();
@@ -276,6 +279,24 @@ public class DashboardFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void editPassword() {
+        String currentEmail = preferences.getString("email", "");
+        Log.d(TAG, "editPassword: currentEmail : " + currentEmail);
+
+        mAuth.sendPasswordResetEmail(currentEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("Password reset link sent");
+                    alert.setMessage("A link to reset your password has been sent to " + currentEmail + ".");
+                    alert.show();
+                }
+            }
+        });
     }
 
     private void logout() {
