@@ -124,7 +124,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
         classxx = preferences.getString("classxx", "XXX"); //ClassSection
 
-        Toast.makeText(getContext(), "RES : " + classxx, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "RES : " + classxx, Toast.LENGTH_SHORT).show();
 
         Log.d(TAG, "onCreateView: RES : " + classxx);
         mDatabase = FirebaseDatabase.getInstance();
@@ -140,7 +140,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                 switch (day) {
                     case "Monday" :
                        getTimeTable("Monday");
-                        Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
                         break;
 
                     case "Tuesday" :

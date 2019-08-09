@@ -212,7 +212,7 @@ public class NotesFragment extends Fragment {
     }
 
 
-    public void setCcode(String cCode) {
+      public void setCcode(String cCode) {
       TextView mProfText = (TextView) mView.findViewById(R.id.subject_cCode);
       mProfText.setText(cCode);
     }

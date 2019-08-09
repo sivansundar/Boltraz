@@ -6,16 +6,26 @@ public class NoteModel {
     public String fileID;
     public String fileURL;
     public String fileSize;
+    public String fileDescription;
 
 
     public NoteModel() {
     }
 
-    public NoteModel(String fileName, String fileID, String fileURL, String fileSize) {
+    public NoteModel(String fileName, String fileID, String fileURL, String fileSize, String fileDescription) {
         this.fileName = fileName;
         this.fileID = fileID;
         this.fileURL = fileURL;
         this.fileSize = fileSize;
+        this.fileDescription = fileDescription;
+    }
+
+    public String getFileDescription() {
+        return fileDescription;
+    }
+
+    public void setFileDescription(String fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     public String getFileSize() {

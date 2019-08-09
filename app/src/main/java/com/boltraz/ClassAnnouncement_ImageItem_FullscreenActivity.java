@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -117,7 +116,7 @@ public class ClassAnnouncement_ImageItem_FullscreenActivity extends AppCompatAct
 
             Log.d("ClassannounFullscreen", "onCreate: URL : " + url);
         }
-        Toast.makeText(this, "URL : " + imageurl, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "URL : " + imageurl, Toast.LENGTH_SHORT).show();
 
 
         // Set up the user interaction to manually show or hide the system UI.

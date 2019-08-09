@@ -169,7 +169,7 @@ public class DashboardFragment extends Fragment {
         String dept = preferences.getString("dept", "N/a");
 
 
-        Toast.makeText(getContext(), "DP URL : " + dp_url, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getContext(), "DP URL : " + dp_url, Toast.LENGTH_SHORT).show();
 
         mAuth = FirebaseAuth.getInstance();
         if (UID.isEmpty()) {
@@ -262,7 +262,7 @@ public class DashboardFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.change_profile_pic_item:
                 changeDPOption(UID);
-                Toast.makeText(getContext(), "Edit Profile picture", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(getContext(), "Edit Profile picture", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.about_item:

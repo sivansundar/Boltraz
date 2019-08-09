@@ -484,7 +484,7 @@ public class MainFragment extends Fragment {
                     @Override
                     public void onPickResult(PickResult pickResult) {
                         if (pickResult.getError() == null) {
-                            Toast.makeText(getContext(), "URI : " + pickResult.getUri().toString(), Toast.LENGTH_SHORT).show();
+                            //  Toast.makeText(getContext(), "URI : " + pickResult.getUri().toString(), Toast.LENGTH_SHORT).show();
                             //uriArrayList.add(pickResult.getUri());
                             uriArrayList.add(new ImageViews_AddAnnouncement(pickResult.getUri()));
 
@@ -657,7 +657,7 @@ public class MainFragment extends Fragment {
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d(TAG, "onSuccess: Download url's updated.");
 
-                                                        Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
+                                                        // Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
 
                                                         Snackbar snackbar = Snackbar
                                                                 .make(rootView, "Image uploaded successfully", Snackbar.LENGTH_LONG);
@@ -704,10 +704,12 @@ public class MainFragment extends Fragment {
                             Toast.makeText(getContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
 
                             if (!uriArrayList.isEmpty()) {
-                                Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
                                 startImageUpload(key, classx);
                             }
 
+                        } else {
+                            Toast.makeText(getContext(), "Could not add this post. ERROR : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
 
 

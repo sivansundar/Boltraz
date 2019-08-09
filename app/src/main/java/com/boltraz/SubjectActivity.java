@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -88,7 +87,7 @@ public class SubjectActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
 
-        Toast.makeText(this, "Subject ID : " + subjectID, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Subject ID : " + subjectID, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -147,7 +146,7 @@ public class SubjectActivity extends AppCompatActivity {
                 Log.d(TAG, "onBindViewHolder: fileURL :  " + fileURL + "\n FileName : " + fileName);
 
                 noteViewHolder.setFileSize(noteModel.getFileSize());
-
+                noteViewHolder.setfileDesc(noteModel.getFileDescription());
                 noteViewHolder.getMetaData(fileURL);
 
 
@@ -251,6 +250,11 @@ public class SubjectActivity extends AppCompatActivity {
         public void setFileName(String filename) {
             TextView fileName_textView = mView.findViewById(R.id.fileName_text);
             fileName_textView.setText(filename);
+        }
+
+        public void setfileDesc(String desc) {
+            TextView mDesctext = (TextView) mView.findViewById(R.id.description_text_list);
+            mDesctext.setText(String.valueOf(desc));
         }
 
         public void setFileSize(String fileSize) {
