@@ -1,9 +1,13 @@
 package com.boltraz;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,10 +71,13 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     String UID, imgUrl;
 
     String title, desc, author;
+    public SharedPreferences preferences;
 
+    String todoPostKey;
     private android.app.ProgressDialog mProgressBar;
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,13 +90,44 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         classxxval = getIntent().getStringExtra("classxx");
         imgUrl = getIntent().getStringExtra("imageUrl");
 
-        Log.d("CA", "onCreate: classxxval : " + classxxval
-                + "\nTitle : " + title + "\ndesc : " + desc + "\npostkey : " + post_key + "\nimgUrl : " + imgUrl);
-
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
         todoReference = mDatabase.getReference().child("students");
-        // post_imageView = findViewById(R.id.imageView);
+
+        preferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+
+        if (TextUtils.isEmpty(title) && TextUtils.isEmpty(desc) && TextUtils.isEmpty(post_key) && TextUtils.isEmpty(classxxval) && TextUtils.isEmpty(imgUrl)) {
+
+            todoPostKey = getIntent().getStringExtra("postKey");
+
+            if (!TextUtils.isEmpty(todoPostKey)) {
+
+                Toast.makeText(this, "All of this is empty : ToDoPostKey : " + todoPostKey, Toast.LENGTH_SHORT).show();
+
+                String classVal = preferences.getString("classxx", "XXX");
+
+                getPostImages(todoPostKey, classVal);
+
+                getPostDetails(todoPostKey, classVal);
+
+                addAnnoun_fab.setVisibility(View.GONE);
+
+            }
+        } else {
+
+
+            Log.d("CA", "onCreate: classxxval : " + classxxval
+                    + "\nTitle : " + title + "\ndesc : " + desc + "\npostkey : " + post_key + "\nimgUrl : " + imgUrl);
+
+
+            getPostImages(post_key, classxxval);
+
+            getPostDetails(post_key, classxxval);
+            Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
+
+
+        }
+// post_imageView = findViewById(R.id.imageView);
 
         imgRecyclerView.setHasFixedSize(true);
         imgRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -97,13 +135,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         mProgressBar = new ProgressDialog(this);
 
 
-        getPostImages(post_key, classxxval);
-
-
         // Glide.with(getApplicationContext()).load(imgUrl).into(post_imageView);
-
-        getPostDetails();
-        Toast.makeText(this, "Post ID : " + post_key, Toast.LENGTH_SHORT).show();
 
 
         UID = FirebaseAuth.getInstance().getUid();
@@ -157,12 +189,12 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
     }
 
-    private void getPostDetails() {
+    private void getPostDetails(String PostKey, String classVal) {
 
         Log.d("values getPostDetails : ", "onDataChange: getPostDetails : " + classxxval + " : postKey : " + post_key);
 
 
-        databaseReference.child(classxxval).child(post_key).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(classVal).child(PostKey).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ClassAnnouncementsModel model;
@@ -210,45 +242,6 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         });
     }
 
-    public class ImageURLViewHolder extends RecyclerView.ViewHolder {
-        public View mView;
-
-        public ImageURLViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            mView = itemView;
-
-        }
-
-
-        public void setImageUrl(String imageUrl) {
-
-            PhotoView imageView = mView.findViewById(R.id.imageView_item);
-            Glide.with(getApplicationContext()).load(imageUrl).into(imageView);
-
-
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(ClassAnnouncementsActivity.this, "URL : " + imageUrl, Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onClick: URL : " + imageUrl);
-
-
-                    Intent intent = new Intent(ClassAnnouncementsActivity.this, ClassAnnouncement_ImageItem_FullscreenActivity.class);
-                    intent.putExtra("imageURL", imageUrl);
-                    startActivity(intent);
-
-
-                }
-            });
-
-
-        }
-
-
-    }
-
-
     @OnClick(R.id.addAlert_fab)
     public void onFabaddAlertClicked() {
         //TODO: add click handling
@@ -275,8 +268,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 HashMap<String, Object> todoMap = new HashMap<>();
                 todoMap.put("title", todo_title);
                 todoMap.put("desc", todo_desc);
-                todoMap.put("author", todo_author);
-                todoMap.put("imgUrl", imgUrl);
+                //todoMap.put("author", todo_author);
+                //todoMap.put("imgUrl", imgUrl);
+                todoMap.put("postKey", post_key);
 
                 todoReference.child(UID).child("todos").child(key).setValue(todoMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -301,6 +295,44 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         });
 
         alertDialogBuilder.show();
+    }
+
+    public class ImageURLViewHolder extends RecyclerView.ViewHolder {
+        public View mView;
+
+        public ImageURLViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            mView = itemView;
+
+        }
+
+
+        public void setImageUrl(String imageUrl) {
+
+            PhotoView imageView = mView.findViewById(R.id.imageView_item);
+            Glide.with(getApplicationContext()).load(imageUrl).into(imageView);
+
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Toast.makeText(ClassAnnouncementsActivity.this, "URL : " + imageUrl, Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onClick: URL : " + imageUrl);
+
+
+                    Intent intent = new Intent(ClassAnnouncementsActivity.this, ClassAnnouncement_ImageItem_FullscreenActivity.class);
+                    intent.putExtra("imageURL", imageUrl);
+                    startActivity(intent);
+
+
+                }
+            });
+
+
+        }
+
+
     }
 
 }

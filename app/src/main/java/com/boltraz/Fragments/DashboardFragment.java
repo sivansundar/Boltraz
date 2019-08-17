@@ -270,7 +270,17 @@ public class DashboardFragment extends Fragment {
                 break;
 
             case R.id.edit_password_item:
-                editPassword();
+                AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                alert.setMessage("Are you sure you want to send an email reset link to your account?");
+                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editPassword();
+
+                    }
+                });
+                alert.show();
                 break;
             case R.id.logout_item:
                 logout();
@@ -311,7 +321,7 @@ public class DashboardFragment extends Fragment {
 
                 Log.d(TAG, "onAuthStateChanged: " + mAuth.getCurrentUser().getDisplayName() + " is signed out");
                 progressDialog.setTitle("Sign out");
-                progressDialog.setMessage("Signing you out " + mAuth.getCurrentUser().getDisplayName());
+                progressDialog.setMessage("Signing you out");
                 progressDialog.show();
                 Toast.makeText(getContext(), "Signing you out", Toast.LENGTH_SHORT).show();
 

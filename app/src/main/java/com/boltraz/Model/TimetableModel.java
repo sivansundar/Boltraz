@@ -4,18 +4,18 @@ public class TimetableModel {
 
     private String title;
     private String ccode;
-    private String startsAt;
-    private String endsAt;
+    private String startTime;
+    private String endTime;
     private String prof;
 
     public TimetableModel() {
     }
 
-    public TimetableModel(String title, String ccode, String startsAt, String endsAt, String prof) {
+    public TimetableModel(String title, String ccode, String startTime, String endTime, String prof) {
         this.title = title;
         this.ccode = ccode;
-        this.startsAt = startsAt;
-        this.endsAt = endsAt;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.prof = prof;
     }
 
@@ -43,19 +43,19 @@ public class TimetableModel {
         this.ccode = ccode;
     }
 
-    public String getStartsAt() {
-        return startsAt;
+    public String getstartTime() {
+        return startTime;
     }
 
     public void setStartsAt(String startsAt) {
-        this.startsAt = startsAt;
+        this.startTime = startTime;
     }
 
-    public String getEndsAt() {
-        return endsAt;
+    public String getendTime() {
+        return endTime;
     }
 
-    public void setEndsAt(String endsAt) {
-        this.endsAt = endsAt;
+    public void setendTime(String endTime) {
+        this.endTime = endTime;
     }
 }

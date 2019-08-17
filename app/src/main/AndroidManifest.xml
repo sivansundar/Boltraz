@@ -4,6 +4,9 @@
     package="com.boltraz">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        tools:node="remove" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ToDoListActivity_Post"></activity>
+        <activity android:name=".AssignmentListActivity" />
+        <activity android:name=".ToDoListActivity" />
         <activity
             android:name=".ClassAnnouncement_ImageItem_FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

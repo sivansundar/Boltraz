@@ -158,6 +158,10 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                         getTimeTable("Friday");
                         break;
 
+                    case "Saturday":
+                        getTimeTable("Saturday");
+                        break;
+
                     default:
                         Toast.makeText(getContext(), "Nothing happens", Toast.LENGTH_SHORT).show();
                         break;
@@ -188,6 +192,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private void getTimeTable(String day) {
 
         Query query = databaseReference.child(day);
+        Log.d(TAG, "getTimeTable: QUERY : " + query.toString());
+
 
         FirebaseRecyclerOptions<TimetableModel> options =
                 new FirebaseRecyclerOptions.Builder<TimetableModel>()
@@ -202,6 +208,9 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                 timeTableViewHolder.setTitle(timetableModel.getTitle());
                 timeTableViewHolder.setProf(timetableModel.getProf());
                 timeTableViewHolder.setHour(i);
+                timeTableViewHolder.setStartTime(timetableModel.getstartTime());
+                timeTableViewHolder.setEndTime(timetableModel.getendTime());
+
                 Log.d(TAG, "onClick: position value " + i);
 
 
@@ -220,7 +229,7 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         };
 
         timeTableRecyclerView.setAdapter(firebaseRecyclerAdapter);
-        timeTableRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        // timeTableRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
 
         firebaseRecyclerAdapter.startListening();
 
@@ -252,6 +261,17 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
             hour++;
             TextView houtText = (TextView) mView.findViewById(R.id.hour_txt);
             houtText.setText("" + hour);
+        }
+
+        public void setStartTime(String startTime) {
+            TextView startTimeText = (TextView) mView.findViewById(R.id.startsAt_txt);
+            startTimeText.setText("" + startTime);
+        }
+
+        public void setEndTime(String endTime) {
+
+            TextView endTimeText = (TextView) mView.findViewById(R.id.endsAt_txt);
+            endTimeText.setText("" + endTime);
         }
 
     }

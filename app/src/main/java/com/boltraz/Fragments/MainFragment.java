@@ -29,12 +29,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.boltraz.AssignmentListActivity;
 import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.ListAdapter.ImageListAdapter;
 import com.boltraz.Model.ClassAnnouncementsModel;
 import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
+import com.boltraz.ToDoListActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,6 +44,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -98,6 +101,12 @@ public class MainFragment extends Fragment {
     TextView todoNumber_label;
     @BindView(R.id.name_label)
     TextView labelName;
+    @BindView(R.id.todoList_holder)
+    MaterialCardView todoListHolder;
+    @BindView(R.id.assignments_holder)
+    MaterialCardView assignmentsHolder;
+    @BindView(R.id.assignmentNumber_label)
+    TextView assignmentNumberLabel;
 
 
     private ArrayList<ImageViews_AddAnnouncement> uriArrayList;
@@ -121,6 +130,8 @@ public class MainFragment extends Fragment {
 
 
     int todoSize = 0;
+    int assignmentSize;
+
 
     String announcement_type;
     String CLASSXX = "";
@@ -237,9 +248,25 @@ public class MainFragment extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        // ClassXX not recognizing the value on first instance.
+
+        todoListHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "TodoList", Toast.LENGTH_SHORT).show();
+
+                startActivity(new Intent(getContext(), ToDoListActivity.class));
+            }
+        });
+
+        assignmentsHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Assignment", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), AssignmentListActivity.class));
 
 
+            }
+        });
 
         return rootView;
     }
@@ -305,6 +332,7 @@ public class MainFragment extends Fragment {
 
 
         getToDoCount();
+        getAssignmentCount();
 
         getDP();
 
@@ -314,13 +342,42 @@ public class MainFragment extends Fragment {
     private void getToDoCount() {
 
 
-        databaseReference.child("students").child(userID).child("todos").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("students").child(userID).child("todos").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 todoSize = (int) dataSnapshot.getChildrenCount();
 
-                if (todoSize > 0) {
-                    todoNumber_label.setText("" + todoSize);
+
+                todoNumber_label.setText("" + todoSize);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void getAssignmentCount() {
+
+        String classxxx = sharedPreferences.getString("classxx", "XXX");
+
+        databaseReference.child("Assignments").child(classxxx).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                assignmentSize = (int) dataSnapshot.getChildrenCount();
+
+                if (assignmentSize == 0) {
+                    assignmentNumberLabel.setText("0");
+
+                } else {
+
+
+                    assignmentNumberLabel.setText("" + assignmentSize);
+
                 }
 
             }
@@ -418,6 +475,7 @@ public class MainFragment extends Fragment {
                         intent.putExtra("imageUrl", imageUrl);
                         intent.putExtra("postID", post_key);
 
+                        Log.d(TAG, "onClick: IMAGE URL OnClick : " + imageUrl);
                         startActivity(intent);
 
                     }
@@ -445,6 +503,7 @@ public class MainFragment extends Fragment {
         View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
         MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
         ImageButton imageButton = customLayout.findViewById(R.id.add_imageButton);
+
         Spinner announ_type_spinner = customLayout.findViewById(R.id.announ_type_spinner);
         RecyclerView image_recyclerView = customLayout.findViewById(R.id.image_recyclerView);
 
@@ -455,9 +514,9 @@ public class MainFragment extends Fragment {
         image_recyclerView.setAdapter(adapter);
 
 
-        String [] announ_type = { "None", "Assignment"};
+        String[] announ_type = {"None", "Assignment"};
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_dropdown_item, announ_type);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, announ_type);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         announ_type_spinner.setAdapter(arrayAdapter);
 
@@ -537,7 +596,7 @@ public class MainFragment extends Fragment {
                     postValues.put("date", getDate());
                     postValues.put("time", getTime());
 
-                    startPostUpload(postValues, post_key, classx);
+                    startPostUpload(postValues, post_key, classx, announcement_type);
 
                     //startImageUpload(title, desc, classx);
 
@@ -546,6 +605,52 @@ public class MainFragment extends Fragment {
             }
         });
         alert.show();
+
+
+    }
+
+    private void startPostUpload(HashMap<String, Object> postValues, String key, String classx, String announcement_type) {
+
+        if (announcement_type.equalsIgnoreCase("assignment")) {
+            databaseReference.child("Assignments").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (!uriArrayList.isEmpty()) {
+                        //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                        startImageUpload(key, classx, announcement_type);
+                    }
+                    Toast.makeText(getContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } else {
+            databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
+
+                        if (!uriArrayList.isEmpty()) {
+                            //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                            startImageUpload(key, classx, announcement_type);
+                        }
+
+                    } else {
+                        Toast.makeText(getContext(), "Could not add this post. ERROR : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), "Upload failed! : " + e, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        }
 
 
     }
@@ -575,46 +680,91 @@ public class MainFragment extends Fragment {
         return date;
     }
 
-    private void startImageUpload(String post_key, String classxxxVal) {
+    private void startImageUpload(String post_key, String classxxxVal, String announcement_type) {
 
         //  Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
+        mProgressBar.setMessage("Posting...");
+        mProgressBar.show();
 
-
-
-            mProgressBar.setMessage("Posting...");
-            mProgressBar.show();
-
-        /*String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();*/
-        StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
-
+        if (announcement_type.equalsIgnoreCase("Assignment")) {
+            StorageReference filePath = mStorage.child("Assignment").child(classxxxVal).child(post_key);
             Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
 
-           /* Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-            String time = simpleDateFormat.format(calendar.getTime());
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= 4; i++) {
+            for (int i = 0; i < uriArrayList.size(); i++) {
+                // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
 
-                sb.append(time.charAt(i));
+                Uri imgfile = uriArrayList.get(i).getImageButtonUri();
 
+                Log.d(TAG, "startImageUpload: IMAGE URI AT uriList[" + i + "] is : " + imgfile.toString());
+                filePath.child(imgfile.getLastPathSegment()).putFile(imgfile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            filePath.child(imgfile.getLastPathSegment()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+
+                                    if (task.isSuccessful()) {
+                                        String downloadUrl = task.getResult().toString();
+
+                                        Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
+
+
+                                        // Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
+
+                                       /* HashMap<String, Object> postValues = new HashMap<String, Object>();
+                                        postValues.put("title", title_text);
+                                        postValues.put("desc", desc_text);
+                                        postValues.put("author", name);
+                                        postValues.put("postID", key);
+                                        postValues.put("type", announcement_type);
+                                        //postValues.put("imgURLs", "");
+                                        postValues.put("time", sb.toString());
+*/
+                                        HashMap<String, Object> downloadurlhash = new HashMap<>();
+                                        downloadurlhash.put("imgUrl", downloadUrl);
+
+
+                                        databaseReference.child("Assignments").child(classxxxVal).child(post_key).child("imgURLs").push().setValue(downloadurlhash)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccess: Download url's updated.");
+
+                                                        // Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
+
+                                                        Snackbar snackbar = Snackbar
+                                                                .make(rootView, "Image uploaded successfully", Snackbar.LENGTH_LONG);
+
+                                                        snackbar.show();
+
+                                                        mProgressBar.dismiss();
+
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(getContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                            //String downloadUrl = filePath.getDownloadUrl().toString();
+
+
+                        } else {
+                            Toast.makeText(getContext(), "Failed ", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                        }
+                    }
+                });
 
             }
 
-            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            Log.d(TAG, "onClick: DATE : " + date);
+        } else {
+            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
+            Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
 
-
-            HashMap<String, Object> postValues = new HashMap<String, Object>();
-            postValues.put("title", title_text);
-            postValues.put("desc", desc_text);
-            postValues.put("author", name);
-            postValues.put("postID", key);
-            postValues.put("type", announcement_type);
-            postValues.put("date", date);
-            postValues.put("time", sb.toString());
-
-            startPostUpload(postValues, key, classxxx);*/
 
             for (int i = 0; i < uriArrayList.size(); i++) {
                 // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
@@ -685,42 +835,43 @@ public class MainFragment extends Fragment {
                 });
 
             }
+        }
 
 
+        /*String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();*/
+        StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
 
+        Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
+
+           /* Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String time = simpleDateFormat.format(calendar.getTime());
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i <= 4; i++) {
+
+                sb.append(time.charAt(i));
+
+
+            }
+
+            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            Log.d(TAG, "onClick: DATE : " + date);
+
+
+            HashMap<String, Object> postValues = new HashMap<String, Object>();
+            postValues.put("title", title_text);
+            postValues.put("desc", desc_text);
+            postValues.put("author", name);
+            postValues.put("postID", key);
+            postValues.put("type", announcement_type);
+            postValues.put("date", date);
+            postValues.put("time", sb.toString());
+
+            startPostUpload(postValues, key, classxxx);*/
 
 
         uriArrayList.clear();
-
-    }
-
-    private void startPostUpload(HashMap<String, Object> postValues, String key, String classx) {
-
-
-        databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
-
-                            if (!uriArrayList.isEmpty()) {
-                                //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
-                                startImageUpload(key, classx);
-                            }
-
-                        } else {
-                            Toast.makeText(getContext(), "Could not add this post. ERROR : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Upload failed! : " + e, Toast.LENGTH_SHORT).show();
-                    }
-                });
 
     }
 

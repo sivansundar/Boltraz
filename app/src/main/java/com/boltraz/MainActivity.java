@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
         Log.d(TAG, "startListeningNotifications: Listening to notifications : " + classxx);
         FirebaseApp.initializeApp(this);
-        FirebaseMessaging.getInstance().subscribeToTopic("Class" + classxx + "_Announcements");
+        FirebaseMessaging.getInstance().subscribeToTopic(classxx + "_Announcements");
     }
 
     private void setFragment(Fragment fragment) {

@@ -3,10 +3,10 @@ package com.boltraz.Model;
 
 public class ClassAnnouncementsModel {
 
-
     private String title;
     private String desc;
     private String postID;
+    private String postKey;
     private String author;
     private String imgUrl;
     private String time;
@@ -16,6 +16,18 @@ public class ClassAnnouncementsModel {
 
     public ClassAnnouncementsModel() {
 
+    }
+
+    public ClassAnnouncementsModel(String postKey) {
+        this.postKey = postKey;
+    }
+
+    public String getPostKey() {
+        return postKey;
+    }
+
+    public void setPostKey(String postKey) {
+        this.postKey = postKey;
     }
 
     public ClassAnnouncementsModel(String title, String desc, String postID, String author, String imgUrl, String time, String date) {

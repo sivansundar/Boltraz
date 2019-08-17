@@ -196,38 +196,43 @@ public class LoginActivity extends AppCompatActivity {
         mProgressBar.setTitle("Login");
         mProgressBar.setMessage("Logging you in. Please wait.");
         mProgressBar.show();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+
+        mAuth.signInWithEmailAndPassword(userEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void run() {
-                mProgressBar.dismiss();
-                mAuth.signInWithEmailAndPassword(userEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
 
-                            //   getLoginDocument();
+                    //   getLoginDocument();
 
-                            Log.d(TAG, "onComplete:Logged in successfully by " + userEmail);
-                            //getTokenAndUpdate(mAuth.getUid());
-                            Toast.makeText(LoginActivity.this, "Welcome", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "onComplete:Logged in successfully by " + userEmail);
+                    //getTokenAndUpdate(mAuth.getUid());
+                    Toast.makeText(LoginActivity.this, "Welcome", Toast.LENGTH_LONG).show();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressBar.dismiss();
 
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        } else {
-
-                            Log.d(TAG, "Failed : Some error : " + task.getException().getMessage());
-                            // Toast.makeText(LoginActivity.this, "Couldn't log in. Incorrect credentials. ", Toast.LENGTH_LONG).show();
-
-                            Snackbar snackbar = Snackbar
-                                    .make(rootView, "Couldn't log in. Incorrect credentials.", Snackbar.LENGTH_LONG);
-
-                            snackbar.show();
 
                         }
-                    }
-                });
+                    }, 3000);
+
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                } else {
+
+                    Log.d(TAG, "Failed : Some error : " + task.getException().getMessage());
+                    // Toast.makeText(LoginActivity.this, "Couldn't log in. Incorrect credentials. ", Toast.LENGTH_LONG).show();
+
+                    Snackbar snackbar = Snackbar
+                            .make(rootView, "Couldn't log in. Incorrect credentials.", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
+
+                }
             }
-        }, 3000);
+        });
+
+
 
 
     }

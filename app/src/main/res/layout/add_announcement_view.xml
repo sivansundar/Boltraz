@@ -4,60 +4,70 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/announ_title_edittext"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            android:padding="10dp"
-            android:textColorHint="#808080" />
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <EditText
+                android:id="@+id/announ_title_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Title"
+                android:padding="10dp"
+                android:textColorHint="#808080" />
 
 
-        <EditText
-            android:id="@+id/announ_desc_editText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="Description"
-            android:maxHeight="500dp"
-            android:maxLines="500"
-            android:padding="10dp"
-            android:textColorHint="#808080" />
+            <EditText
+                android:id="@+id/announ_desc_editText"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="20dp"
+                android:fadeScrollbars="true"
+                android:hint="Description"
+                android:maxHeight="500dp"
+                android:maxLines="500"
+                android:padding="10dp"
+                android:scrollbars="vertical"
+                android:textColorHint="#808080" />
 
-        <Spinner
-            android:layout_gravity="right"
-            android:id="@+id/announ_type_spinner"
-            android:tooltipText="Type"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp">
+            <Spinner
+                android:id="@+id/announ_type_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:tooltipText="Type">
 
-        </Spinner>
+            </Spinner>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_image_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add an image" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_image_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add an image" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/image_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="250dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/image_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            </androidx.recyclerview.widget.RecyclerView>
 
-        <ImageButton
-            android:visibility="invisible"
-            android:id="@+id/add_imageButton"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop" />
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/add_imageButton"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
 </LinearLayout>

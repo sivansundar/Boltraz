@@ -101,6 +101,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+
             <ScrollView
                 android:layout_height="wrap_content"
                 android:id="@+id/content_scroll"
@@ -114,7 +115,7 @@
                     android:textAlignment="gravity"
                     android:lineSpacingExtra="10dp"
                     android:text="@string/dummy"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:layout_below="@id/title_holder"
                     android:id="@+id/desc_text"
                     android:layout_width="wrap_content"
