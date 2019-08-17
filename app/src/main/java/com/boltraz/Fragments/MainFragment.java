@@ -376,7 +376,7 @@ public class MainFragment extends Fragment {
                 } else {
 
 
-                    assignmentNumberLabel.setText("" + assignmentSize);
+                    assignmentNumberLabel.setText(String.valueOf(assignmentSize));
 
                 }
 

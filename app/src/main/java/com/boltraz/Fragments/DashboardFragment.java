@@ -266,6 +266,7 @@ public class DashboardFragment extends Fragment {
                 break;
 
             case R.id.about_item:
+                about();
                 Toast.makeText(getContext(), "About item", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -289,6 +290,12 @@ public class DashboardFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void about() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setMessage("Ya'll know who it is!");
+        alert.show();
     }
 
     private void editPassword() {
