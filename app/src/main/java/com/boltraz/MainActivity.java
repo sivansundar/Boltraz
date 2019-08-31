@@ -41,10 +41,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     BottomNavigationView bottomNavigation;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-
-
-    private FragmentTransaction fragmentTransaction;
 
     private MainFragment mainFragment;
     private DashboardFragment dashboardFragment;
@@ -74,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         setFragment(mainFragment);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+
         databaseReference = mFirebaseDatabase.getReference();
 
         userID = mAuth.getUid();

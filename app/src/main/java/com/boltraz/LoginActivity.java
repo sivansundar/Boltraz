@@ -227,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
                             .make(rootView, "Couldn't log in. Incorrect credentials.", Snackbar.LENGTH_LONG);
 
                     snackbar.show();
-
+                    mProgressBar.dismiss();
                 }
             }
         });

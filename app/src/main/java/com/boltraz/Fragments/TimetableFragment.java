@@ -1,9 +1,11 @@
 package com.boltraz.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.BindView;
 
@@ -64,13 +70,15 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     private String mParam2;
     public String day = "Monday";
 
+    private static final String TAG = "Boltraz TimeTableFrag";
+
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference;
 
     private RecyclerView timeTableRecyclerView;
     private OnFragmentInteractionListener mListener;
-
-    private static final String TAG = "Boltraz TimeTableFragment";
+    String weekDay;
+    TabLayout tabLayout;
     SharedPreferences preferences;
 
 
@@ -110,7 +118,6 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_timetable, container, false);
-        TabLayout tabLayout;
         tabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
 
         timeTableRecyclerView = (RecyclerView) v.findViewById(R.id.timetable_recyclerView);
@@ -132,6 +139,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
         // Sends a firebase query to pull according to day.
 
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+
+        Calendar calendar = Calendar.getInstance();
+        weekDay = dayFormat.format(calendar.getTime());
+
+        Log.d(TAG, "onCreateView: weekDAY : " + weekDay);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -182,11 +195,53 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
         return v;
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onStart() {
         super.onStart();
 
-        getTimeTable("Monday");
+        getTimeTable(weekDay);
+        TabLayout.Tab tab;
+        switch (weekDay) {
+            case "Monday":
+                //  Toast.makeText(getContext(), "Monday", Toast.LENGTH_SHORT).show();
+
+                tab = tabLayout.getTabAt(0);
+
+                break;
+
+            case "Tuesday":
+                tab = tabLayout.getTabAt(1);
+
+                break;
+
+            case "Wednesday":
+                tab = tabLayout.getTabAt(2);
+
+                break;
+            case "Thursday":
+                tab = tabLayout.getTabAt(3);
+
+                break;
+
+            case "Friday":
+                tab = tabLayout.getTabAt(4);
+
+                break;
+
+            case "Saturday":
+                tab = tabLayout.getTabAt(5);
+
+
+                break;
+
+            default:
+                tab = tabLayout.getTabAt(0);
+                break;
+        }
+
+        tab.select();
+
     }
 
     private void getTimeTable(String day) {
@@ -254,24 +309,24 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
 
         public void setProf(String prof) {
             TextView profText = (TextView) mView.findViewById(R.id.profName_txt);
-            profText.setText("Prof. " +prof);
+            profText.setText(TextUtils.concat("", prof));
         }
 
         public void setHour(int hour) {
             hour++;
             TextView houtText = (TextView) mView.findViewById(R.id.hour_txt);
-            houtText.setText("" + hour);
+            houtText.setText(TextUtils.concat("", String.valueOf(hour)));
         }
 
         public void setStartTime(String startTime) {
             TextView startTimeText = (TextView) mView.findViewById(R.id.startsAt_txt);
-            startTimeText.setText("" + startTime);
+            startTimeText.setText(TextUtils.concat("", startTime));
         }
 
         public void setEndTime(String endTime) {
 
             TextView endTimeText = (TextView) mView.findViewById(R.id.endsAt_txt);
-            endTimeText.setText("" + endTime);
+            endTimeText.setText(TextUtils.concat("", endTime));
         }
 
     }

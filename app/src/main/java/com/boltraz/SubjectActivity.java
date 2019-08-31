@@ -1,11 +1,10 @@
 package com.boltraz;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +20,6 @@ import com.boltraz.Model.NoteModel;
 import com.boltraz.Model.SubjectModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,14 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +44,9 @@ public class SubjectActivity extends AppCompatActivity {
     @BindView(R.id.notes_recyclerView)
     RecyclerView notesRecyclerView;
 
+    public SharedPreferences sharedPreferences;
+
+
 
     public ProgressDialog progressDialog;
 
@@ -62,6 +55,8 @@ public class SubjectActivity extends AppCompatActivity {
     public long sizeinMb;
 
     public String format;
+
+    public int semester;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference;
@@ -76,6 +71,7 @@ public class SubjectActivity extends AppCompatActivity {
 
         subjectID = getIntent().getStringExtra("subject_id");
 
+
         notesRecyclerView = (RecyclerView) findViewById(R.id.notes_recyclerView);
         notesRecyclerView.setHasFixedSize(true);
         notesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -85,6 +81,10 @@ public class SubjectActivity extends AppCompatActivity {
 
         //mStorage = FirebaseStorage.getInstance();
         progressDialog = new ProgressDialog(this);
+
+        sharedPreferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+
+        semester = sharedPreferences.getInt("semester", 6);
 
 
         // Toast.makeText(this, "Subject ID : " + subjectID, Toast.LENGTH_SHORT).show();
@@ -101,14 +101,18 @@ public class SubjectActivity extends AppCompatActivity {
     }
 
     private void getSubjectDetails() {
-        databaseReference.child("subjects/cse/sem7").child(subjectID).addValueEventListener(new ValueEventListener() {
+        databaseReference.child("subjects/cse/").child(String.valueOf(TextUtils.concat("sem", String.valueOf(semester)))).child(subjectID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 SubjectModel subjectModel = dataSnapshot.getValue(SubjectModel.class);
 
-                titleText.setText("" + subjectModel.getTitle());
-                ccodeChip.setText("" + subjectModel.getCcode());
-                creditChip.setText("" + subjectModel.getCredits() + " credits");
+                String title = subjectModel.getTitle().toString();
+                String ccode = subjectModel.getCcode().toString();
+                int credits = subjectModel.getCredits();
+
+                titleText.setText(TextUtils.concat("", title));
+                ccodeChip.setText(TextUtils.concat("", ccode));
+                creditChip.setText(TextUtils.concat(String.valueOf(credits), " credits"));
             }
 
             @Override
@@ -125,7 +129,7 @@ public class SubjectActivity extends AppCompatActivity {
                 .getReference()
                 .child("subjects")
                 .child("cse")
-                .child("sem7")
+                .child(String.valueOf(TextUtils.concat("sem", String.valueOf(semester))))
                 .child(subjectID)
                 .child("notes");
 
@@ -147,71 +151,6 @@ public class SubjectActivity extends AppCompatActivity {
 
                 noteViewHolder.setFileSize(noteModel.getFileSize());
                 noteViewHolder.setfileDesc(noteModel.getFileDescription());
-                noteViewHolder.getMetaData(fileURL);
-
-
-
-
-
-                /*noteViewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "onClick: mView : File name : " + fileRef.getName());
-
-                        fileRef.getMetadata().addOnCompleteListener(new OnCompleteListener<StorageMetadata>() {
-                            @Override
-                            public void onComplete(@NonNull Task<StorageMetadata> task) {
-                                if (task.isSuccessful()) {
-
-                                    String formatType = "";
-                                    sizeinMb = ( Math.round((task.getResult().getSizeBytes()/ (1024 * 1024)) * 10) / 10);
-                                    String contentType = fileRef.getName();
-                                    Log.d(TAG, "onComplete: FileName : " + contentType);
-                                    if (contentType.contains(".pdf")) {
-                                        formatType = "pdf";
-                                    }
-                                    if (contentType.contains(".docx")) {
-                                        formatType = "docx";
-                                    }
-                                    Log.d(TAG, "onComplete: File format : " + formatType);
-                                    Log.d(TAG, "onComplete: Size in MB : " + sizeinMb);
-
-
-                                }
-                            }
-                        });
-
-                        if (sizeinMb>15) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(SubjectActivity.this);
-                            alert.setTitle("Warning");
-                            alert.setMessage("This file is greater than 15 MB. Are you sure you want to download this file?");
-                            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    //startDownload(fileRef, fileName,);
-
-
-                                }
-                            });
-
-                            alert.setNegativeButton("View the file", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent();
-                                    intent.setAction(Intent.ACTION_QUICK_VIEW);
-                                    intent.setData(Uri.parse(fileURL));
-                                    startActivity(intent);
-                                }
-                            });
-                            alert.show();
-
-                        }
-
-
-                        }
-
-                });*/
             }
 
             @NonNull
@@ -232,13 +171,9 @@ public class SubjectActivity extends AppCompatActivity {
     public class NoteViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
-        public StorageReference fileRef;
         public FirebaseStorage mStorage;
 
 
-        public String fileName;
-        public long sizeinBytes;
-        public String fileFormat;
 
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -259,107 +194,8 @@ public class SubjectActivity extends AppCompatActivity {
 
         public void setFileSize(String fileSize) {
             TextView fileSize_textView = mView.findViewById(R.id.fileSize_text);
-            fileSize_textView.setText("" + fileSize);
+            fileSize_textView.setText(TextUtils.concat("", fileSize));
         }
-
-        public void getMetaData(String referenceFromUrl) {
-            fileRef = mStorage.getReferenceFromUrl(referenceFromUrl);
-
-            fileRef.getMetadata().addOnCompleteListener(new OnCompleteListener<StorageMetadata>() {
-                @Override
-                public void onComplete(@NonNull Task<StorageMetadata> task) {
-                    Log.d(TAG, "onComplete: From ViewHolder : FileName : " + task.getResult().getName() + "\n FileSize : " + task.getResult().getSizeBytes()
-                            + "\n FileURL : " + referenceFromUrl);
-
-                    fileName = task.getResult().getName();
-                    sizeinBytes = task.getResult().getSizeBytes();
-
-                    if (fileName.contains(".pdf")) {
-                        fileFormat = "pdf";
-                    }
-
-                    if (fileName.contains(".docx")) {
-                        fileFormat = "docx";
-                    }
-                    int sizeinMb = ( Math.round((task.getResult().getSizeBytes()/ (1024 * 1024)) * 10) / 10);
-
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-                            if (sizeinMb>15) {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(SubjectActivity.this);
-                                alert.setTitle("Warning");
-                                alert.setMessage("This file is greater than 15 MB. Are you sure you want to download this file?");
-                                alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        try {
-                                            startDownload(fileRef, fileName,fileFormat);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-
-                                    }
-                                });
-
-                                alert.setNegativeButton("View the file", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_QUICK_VIEW);
-                                        intent.setData(Uri.parse(referenceFromUrl));
-                                        startActivity(intent);
-                                    }
-                                });
-                                alert.show();
-
-                            }
-
-                            else {
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_QUICK_VIEW);
-                                intent.setData(Uri.parse(referenceFromUrl));
-                                startActivity(intent);
-                            }
-                        }
-                    });
-
-
-                }
-            });
-
-        }
-
-    }
-    public void startDownload(StorageReference fileRef, String fileName, String format) throws IOException {
-        Log.d(TAG, "startDownload: File details : " + fileName + "\n " + format);
-
-        File localFile = File.createTempFile(fileName, "pdf");
-
-
-
-        fileRef.getFile(localFile).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                int progress = ( Math.round((taskSnapshot.getBytesTransferred()/ (1024 * 1024)) * 10) / 10);
-                progressDialog.setTitle("Downloading");
-                progressDialog.setMessage(progress + "% downloaded...");
-                progressDialog.show();
-
-
-
-            }
-        }).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
-
-                progressDialog.dismiss();
-            }
-        });
 
     }
 }

@@ -295,6 +295,8 @@ public class MainFragment extends Fragment {
 
                 String email = userModel.getEmail();
 
+                int semester = userModel.getSemester();
+
                 // The shared prefs work perfectly fine. Use that to save values.
                 String classxx = "Class" + userModel.getClasssection();
 
@@ -305,6 +307,7 @@ public class MainFragment extends Fragment {
                 editor.putString("dp_url", dp_url);
                 editor.putString("dept", dept);
                 editor.putString("email", email);
+                editor.putInt("semester", semester);
                 editor.apply();
 
 
@@ -710,18 +713,6 @@ public class MainFragment extends Fragment {
 
                                         Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
 
-
-                                        // Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
-
-                                       /* HashMap<String, Object> postValues = new HashMap<String, Object>();
-                                        postValues.put("title", title_text);
-                                        postValues.put("desc", desc_text);
-                                        postValues.put("author", name);
-                                        postValues.put("postID", key);
-                                        postValues.put("type", announcement_type);
-                                        //postValues.put("imgURLs", "");
-                                        postValues.put("time", sb.toString());
-*/
                                         HashMap<String, Object> downloadurlhash = new HashMap<>();
                                         downloadurlhash.put("imgUrl", downloadUrl);
 
@@ -786,17 +777,6 @@ public class MainFragment extends Fragment {
                                         Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
 
 
-                                        // Toast.makeText(getContext(), "Timestamp : " + sb.toString(), Toast.LENGTH_SHORT).show();
-
-                                       /* HashMap<String, Object> postValues = new HashMap<String, Object>();
-                                        postValues.put("title", title_text);
-                                        postValues.put("desc", desc_text);
-                                        postValues.put("author", name);
-                                        postValues.put("postID", key);
-                                        postValues.put("type", announcement_type);
-                                        //postValues.put("imgURLs", "");
-                                        postValues.put("time", sb.toString());
-*/
                                         HashMap<String, Object> downloadurlhash = new HashMap<>();
                                         downloadurlhash.put("imgUrl", downloadUrl);
 
@@ -824,7 +804,6 @@ public class MainFragment extends Fragment {
                                 }
                             });
 
-                            //String downloadUrl = filePath.getDownloadUrl().toString();
 
 
                         } else {
@@ -838,38 +817,7 @@ public class MainFragment extends Fragment {
         }
 
 
-        /*String key = databaseReference.child("classAnnouncements").child(classxxx).push().getKey();*/
-        StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
-
         Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
-
-           /* Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-            String time = simpleDateFormat.format(calendar.getTime());
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i <= 4; i++) {
-
-                sb.append(time.charAt(i));
-
-
-            }
-
-            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            Log.d(TAG, "onClick: DATE : " + date);
-
-
-            HashMap<String, Object> postValues = new HashMap<String, Object>();
-            postValues.put("title", title_text);
-            postValues.put("desc", desc_text);
-            postValues.put("author", name);
-            postValues.put("postID", key);
-            postValues.put("type", announcement_type);
-            postValues.put("date", date);
-            postValues.put("time", sb.toString());
-
-            startPostUpload(postValues, key, classxxx);*/
-
 
         uriArrayList.clear();
 
