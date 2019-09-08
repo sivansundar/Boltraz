@@ -144,7 +144,7 @@ public class AssignmentListActivity extends AppCompatActivity {
                 assignmentViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(AssignmentListActivity.this, ClassAnnouncementsActivity.class);
+                        Intent intent = new Intent(AssignmentListActivity.this, AssignmentActivity.class);
                         intent.putExtra("assignment_postKey", assignmentViewHolder.mView.getTag().toString());
                         startActivity(intent);
                     }

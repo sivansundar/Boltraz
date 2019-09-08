@@ -9,14 +9,15 @@
         tools:node="remove" />
 
     <application
-        android:name="com.boltraz.FirebaseConfig"
+        android:name=".FirebaseConfig"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ToDoListActivity_Post"></activity>
+        <activity android:name=".AssignmentActivity"></activity>
+        <activity android:name=".ToDoListActivity_Post" />
         <activity android:name=".AssignmentListActivity" />
         <activity android:name=".ToDoListActivity" />
         <activity
