@@ -2,7 +2,9 @@ package com.boltraz;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -151,6 +154,15 @@ public class SubjectActivity extends AppCompatActivity {
 
                 noteViewHolder.setFileSize(noteModel.getFileSize());
                 noteViewHolder.setfileDesc(noteModel.getFileDescription());
+
+                noteViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(SubjectActivity.this, "Toasttt", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Intent.ACTION_QUICK_VIEW, Uri.parse(fileURL));
+                        startActivity(intent);
+                    }
+                });
             }
 
             @NonNull

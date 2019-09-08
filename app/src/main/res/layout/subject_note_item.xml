@@ -39,8 +39,9 @@
 
                     <TextView
                         android:id="@+id/description_text_list"
-                        android:layout_width="match_parent"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
                         android:text="Description 1 2 3 4 5 6 7  8 9 10"
                         android:textColor="#fafafa"
                         android:textSize="14sp" />

@@ -176,6 +176,8 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
                         break;
 
                     default:
+                        getTimeTable("Monday");
+
                         Toast.makeText(getContext(), "Nothing happens", Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -200,7 +202,12 @@ public class TimetableFragment extends Fragment implements AdapterView.OnItemSel
     public void onStart() {
         super.onStart();
 
-        getTimeTable(weekDay);
+        if (TextUtils.equals(weekDay, "Sunday")) {
+            getTimeTable("Monday");
+        } else {
+            getTimeTable(weekDay);
+
+        }
         TabLayout.Tab tab;
         switch (weekDay) {
             case "Monday":
