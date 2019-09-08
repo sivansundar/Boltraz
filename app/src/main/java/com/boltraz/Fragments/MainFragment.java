@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -505,6 +506,8 @@ public class MainFragment extends Fragment {
 
         View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
         MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
+        MaterialButton add_file_btn = customLayout.findViewById(R.id.add_file_btn);
+
         ImageButton imageButton = customLayout.findViewById(R.id.add_imageButton);
 
         Spinner announ_type_spinner = customLayout.findViewById(R.id.announ_type_spinner);
@@ -529,6 +532,12 @@ public class MainFragment extends Fragment {
                 Toast.makeText(getContext(), "Spinner Value : " + announ_type[position], Toast.LENGTH_SHORT).show();
 
                 announcement_type = announ_type[position];
+
+                if (TextUtils.equals(announcement_type, "Assignment")) {
+                    add_file_btn.setVisibility(View.VISIBLE);
+                } else {
+                    add_file_btn.setVisibility(View.GONE);
+                }
             }
 
             @Override
