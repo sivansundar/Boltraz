@@ -59,12 +59,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
 import com.vansuita.pickimage.listeners.IPickResult;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -133,6 +135,7 @@ public class MainFragment extends Fragment {
     int todoSize = 0;
     int assignmentSize;
 
+    public ChooserDialog chooserDialog;
 
     String announcement_type;
     String CLASSXX = "";
@@ -574,6 +577,30 @@ public class MainFragment extends Fragment {
             }
 
 
+        });
+
+        add_file_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooserDialog = new ChooserDialog(getActivity(), R.style.FileChooserStyle_Dark)
+                        //.withFilter(true, false)
+                        .withStartFile("/sdcard")
+                        .withOnBackPressedListener(new ChooserDialog.OnBackPressedListener() {
+                            @Override
+                            public void onBackPressed(androidx.appcompat.app.AlertDialog dialog) {
+                                chooserDialog.goBack();
+                            }
+                        })
+                        // to handle the result(s)
+                        .withChosenListener(new ChooserDialog.Result() {
+                            @Override
+                            public void onChoosePath(String path, File pathFile) {
+                                Toast.makeText(getContext(), "FOLDER: " + path, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .build()
+                        .show();
+            }
         });
 
         EditText title_editText = customLayout.findViewById(R.id.announ_title_edittext);

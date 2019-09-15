@@ -71,6 +71,9 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.0'
 
+    //FilePicker
+    implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
+
 
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
