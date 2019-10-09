@@ -91,6 +91,8 @@ public class DashboardFragment extends Fragment {
     public SettingsAdapter settingsAdapter;
     @BindView(R.id.settings_options_recyclerView)
     RecyclerView settingsOptionsRecyclerView;
+    @BindView(R.id.text1)
+    TextView text1;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -116,6 +118,7 @@ public class DashboardFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private Unbinder mUnbinder;
+
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -167,7 +170,6 @@ public class DashboardFragment extends Fragment {
         String usn = preferences.getString("usn", "1NH16CSXXX");
         dp_url = preferences.getString("dp_url", "XXX");
         String dept = preferences.getString("dept", "N/a");
-
 
         // Toast.makeText(getContext(), "DP URL : " + dp_url, Toast.LENGTH_SHORT).show();
 
@@ -375,6 +377,7 @@ public class DashboardFragment extends Fragment {
 
                                 if (task.isSuccessful()) {
                                     Toast.makeText(getContext(), "Success!", Toast.LENGTH_SHORT).show();
+
                                     Glide.with(getContext()).load(dp_imageUri).into(profile_picture);
 
                                     filePath.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {

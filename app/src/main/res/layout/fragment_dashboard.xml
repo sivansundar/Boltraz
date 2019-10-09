@@ -99,6 +99,16 @@
                         android:padding="20dp">
 
 
+                        <TextView
+                            android:id="@+id/text1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:text="SAMPLE TEXT "
+                            android:textColor="#000">
+
+                        </TextView>
+
                         <!--<RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

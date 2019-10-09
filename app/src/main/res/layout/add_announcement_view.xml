@@ -68,19 +68,57 @@
 
             </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/image_recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="250dp">
 
-            </androidx.recyclerview.widget.RecyclerView>
-
-            <ImageButton
-                android:id="@+id/add_imageButton"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Images"
+                        android:textSize="48sp">
+
+                    </TextView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/image_recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <ImageButton
+                        android:id="@+id/add_imageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Files"
+                        android:textSize="48sp">
+
+                    </TextView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/files_recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
+
+            </ScrollView>
 
 
         </LinearLayout>

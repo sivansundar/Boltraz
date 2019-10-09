@@ -77,6 +77,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                     intent.putExtra("coe_url", url);
                     mContext.startActivity(intent);
                 }
+
+                if (holder.getAdapterPosition() == 1) {
+                    Log.d("Settings Adapter :", "onClick: Faculty List");
+
+
+                }
             }
         });
 

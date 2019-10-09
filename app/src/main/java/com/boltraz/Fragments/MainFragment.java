@@ -30,10 +30,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.boltraz.AddAnnouncementActivity;
 import com.boltraz.AssignmentListActivity;
 import com.boltraz.ClassAnnouncementsActivity;
+import com.boltraz.ListAdapter.FilesAdapter;
 import com.boltraz.ListAdapter.ImageListAdapter;
 import com.boltraz.Model.ClassAnnouncementsModel;
+import com.boltraz.Model.FileList_AddFiles;
 import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.boltraz.Model.UserModel;
 import com.boltraz.R;
@@ -114,6 +117,9 @@ public class MainFragment extends Fragment {
 
     private ArrayList<ImageViews_AddAnnouncement> uriArrayList;
 
+
+    private ArrayList<FileList_AddFiles> uriFilesArrayList;
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     @BindView(R.id.addAnnouncement_fab)
@@ -129,7 +135,6 @@ public class MainFragment extends Fragment {
 
     public PickSetup setup;
     public StorageReference mStorage;
-    public Query query_announcements;
 
 
     int todoSize = 0;
@@ -147,11 +152,8 @@ public class MainFragment extends Fragment {
     private ProgressDialog mProgressBar;
 
     private Unbinder mUnbinder;
-    String[] classxxarr = {"Class7A", "Class7B", "Class7C"};
 
     String classxxVal = "";
-
-    String classxx;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -218,6 +220,8 @@ public class MainFragment extends Fragment {
         userID = mAuth.getUid();
 
         uriArrayList = new ArrayList<ImageViews_AddAnnouncement>();
+        uriFilesArrayList = new ArrayList<FileList_AddFiles>();
+
 
         classAnnouncementsRecyclerView = (RecyclerView) rootView.findViewById(R.id.classAnnouncements_RecyclerView);
         classAnnouncementsRecyclerView.setHasFixedSize(true);
@@ -508,6 +512,8 @@ public class MainFragment extends Fragment {
         //TODO: add click handling
 
         View customLayout = getLayoutInflater().inflate(R.layout.add_announcement_view, null);
+        View customLayout2 = getLayoutInflater().inflate(R.layout.add_announ_files_recycleview_item, null);
+
         MaterialButton add_image_btn = (MaterialButton) customLayout.findViewById(R.id.add_image_btn);
         MaterialButton add_file_btn = customLayout.findViewById(R.id.add_file_btn);
 
@@ -515,12 +521,15 @@ public class MainFragment extends Fragment {
 
         Spinner announ_type_spinner = customLayout.findViewById(R.id.announ_type_spinner);
         RecyclerView image_recyclerView = customLayout.findViewById(R.id.image_recyclerView);
+        RecyclerView files_recyclerView = customLayout.findViewById(R.id.files_recyclerView);
 
 
         image_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
         ImageListAdapter adapter = new ImageListAdapter(uriArrayList);
         image_recyclerView.setAdapter(adapter);
+
+
+        startActivity(new Intent(getContext(), AddAnnouncementActivity.class));
 
 
         String[] announ_type = {"None", "Assignment"};
@@ -577,14 +586,24 @@ public class MainFragment extends Fragment {
             }
 
 
+
         });
 
         add_file_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                files_recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+                FilesAdapter filesAdapter = new FilesAdapter(uriFilesArrayList);
+                files_recyclerView.setAdapter(filesAdapter);
+                filesAdapter.notifyDataSetChanged();
+
+                //Fix
+
                 chooserDialog = new ChooserDialog(getActivity(), R.style.FileChooserStyle_Dark)
                         //.withFilter(true, false)
                         .withStartFile("/sdcard")
+                        .enableMultiple(true)
                         .withOnBackPressedListener(new ChooserDialog.OnBackPressedListener() {
                             @Override
                             public void onBackPressed(androidx.appcompat.app.AlertDialog dialog) {
@@ -596,10 +615,24 @@ public class MainFragment extends Fragment {
                             @Override
                             public void onChoosePath(String path, File pathFile) {
                                 Toast.makeText(getContext(), "FOLDER: " + path, Toast.LENGTH_SHORT).show();
+
+                                FileList_AddFiles fileObj = new FileList_AddFiles(pathFile.getName(), Uri.fromFile(pathFile));
+
+                                uriFilesArrayList.add(fileObj);
+                                filesAdapter.notifyDataSetChanged();
+
+                                Log.d(TAG, "onChoosePath: File object : " + fileObj.getFile_uri());
+
+
+                                for (int i = 0; i < uriFilesArrayList.size(); i++) {
+                                    Log.d(TAG, "onChoosePath: FILES : \n" + uriFilesArrayList.get(i).getList_fileName() + "\n : " + uriFilesArrayList.get(i).getFile_uri());
+                                }
+
+
                             }
                         })
-                        .build()
-                        .show();
+                        .build();
+                //.show();
             }
         });
 
