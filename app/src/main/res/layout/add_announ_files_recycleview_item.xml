@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -9,24 +10,43 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
-        <ImageButton
-            android:id="@+id/file_imagebutton"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/baseline_account_circle_24" />
-
-        <TextView
-            android:id="@+id/file_fileName"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="10dp"
-            android:text="Sample file name "
-            android:textColor="#FFF">
+            app:cardBackgroundColor="@color/colorWhiteTransparent"
+            app:strokeColor="#fff"
 
-        </TextView>
+            android:layout_width="match_parent"
+            app:strokeWidth="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <ImageButton
+                    android:id="@+id/file_imagebutton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#121212"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/round_waves_white_48" />
+
+                <TextView
+                    android:id="@+id/file_fileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="10dp"
+                    android:text="Sample file name "
+                    android:textColor="#FFF">
+
+                </TextView>
+
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
 
     </LinearLayout>
