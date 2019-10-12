@@ -62,14 +62,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.obsez.android.lib.filechooser.ChooserDialog;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
 import com.vansuita.pickimage.listeners.IPickResult;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -140,7 +138,6 @@ public class MainFragment extends Fragment {
     int todoSize = 0;
     int assignmentSize;
 
-    public ChooserDialog chooserDialog;
 
     String announcement_type;
     String CLASSXX = "";
@@ -600,7 +597,7 @@ public class MainFragment extends Fragment {
 
                 //Fix
 
-                chooserDialog = new ChooserDialog(getActivity(), R.style.FileChooserStyle_Dark)
+               /* chooserDialog = new ChooserDialog(getActivity(), R.style.FileChooserStyle_Dark)
                         //.withFilter(true, false)
                         .withStartFile("/sdcard")
                         .enableMultiple(true)
@@ -631,7 +628,7 @@ public class MainFragment extends Fragment {
 
                             }
                         })
-                        .build();
+                        .build();*/
                 //.show();
             }
         });

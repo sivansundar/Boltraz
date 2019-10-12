@@ -1,18 +1,20 @@
 package com.boltraz;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,14 +26,12 @@ import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.google.android.material.button.MaterialButton;
 import com.jaredrummler.materialspinner.MaterialSpinner;
-import com.obsez.android.lib.filechooser.ChooserDialog;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
 import com.vansuita.pickimage.listeners.IPickResult;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -46,6 +46,10 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     RecyclerView imageRecyclerView;
     ArrayList<ImageViews_AddAnnouncement> uriArrayList;
     ArrayList<FileList_AddFiles> filesArrayList;
+    ArrayList<FileList_AddFiles> filesTempList;
+
+    FilesAdapter filesAdapter;
+
     @BindView(R.id.add_image_btn)
     MaterialButton addImageBtn;
     PickSetup setup;
@@ -58,9 +62,10 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     @BindView(R.id.add_file_btn)
     MaterialButton addFileBtn;
 
-    ChooserDialog chooserDialog;
     @BindView(R.id.filesHeaderText)
     TextView filesHeaderText;
+    @BindView(R.id.post_btn)
+    Button postBtn;
 
 
     @Override
@@ -89,6 +94,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
         });
         uriArrayList = new ArrayList<ImageViews_AddAnnouncement>();
         filesArrayList = new ArrayList<FileList_AddFiles>();
+        filesTempList = new ArrayList<>();
 
         imageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         ImageListAdapter adapter = new ImageListAdapter(uriArrayList);
@@ -96,7 +102,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
 
         filesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        FilesAdapter filesAdapter = new FilesAdapter(filesArrayList);
+        filesAdapter = new FilesAdapter(filesArrayList);
         filesRecyclerView.setAdapter(filesAdapter);
 
 
@@ -155,9 +161,16 @@ public class AddAnnouncementActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                chooserDialog = new ChooserDialog(AddAnnouncementActivity.this, R.style.FileChooserStyle_Dark)
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+
+                startActivityForResult(intent, 1001);
+
+
+                /*chooserDialog = new ChooserDialog(AddAnnouncementActivity.this, R.style.FileChooserStyle_Dark)
                         //.withFilter(true, false)
-                        .withStartFile("/sdcard")
+                        .withStartFile(Environment.getExternalStorageState())
                         .enableMultiple(true)
                         .withOnBackPressedListener(new ChooserDialog.OnBackPressedListener() {
                             @Override
@@ -172,10 +185,13 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                             public void onChoosePath(String path, File pathFile) {
                                 Toast.makeText(getApplicationContext(), "FOLDER: " + path, Toast.LENGTH_SHORT).show();
 
+
                                 Log.d(TAG, "onChoosePath: : File List : " + pathFile.getName() + "\n ");
 
                                 //  FileList_AddFiles fileObj = new FileList_AddFiles(pathFile.getName(), Uri.fromFile(pathFile));
 
+                                filesTempList.add(new FileList_AddFiles(pathFile.getName(), Uri.fromFile(pathFile)));
+                             //   filesArrayList.add(filesTempList.get(filesTempList.size()-1));
                                 filesArrayList.add(new FileList_AddFiles(pathFile.getName(), Uri.fromFile(pathFile)));
 
 
@@ -189,25 +205,76 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
                                 Log.d(TAG, "onChoosePath: SIZE : " + filesArrayList.size());
 
-                                //  filesArrayList.remove(filesArrayList.size()-1);
-
-                                Log.d(TAG, "onChoosePath: SIZE after removal : " + filesArrayList.size());
-
-                                for (int i = 0; i < filesArrayList.size(); i++) {
-                                    Log.d(TAG, "onChoosePath: FILES : \n " + i + " : " + filesArrayList.get(i).getList_fileName() + "\n : " + filesArrayList.get(i).getFile_uri());
-                                }
-
 
                             }
                         })
                         .build()
                         .show();
-
+*/
             }
 
 
         });
 
 
+        postBtn.setOnClickListener(new View.OnClickListener() {
+
+            @SuppressLint("LongLogTag")
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "PostButton");
+
+                for (int i = 0; i < filesArrayList.size() - 1; i++) {
+                    Log.d(TAG, filesArrayList.get(i).getList_fileName() + " " + filesArrayList.get(i).getFile_uri() + "\n");
+
+                }
+            }
+        });
+
+
     }
+
+
+    @SuppressLint("LongLogTag")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1001) {
+                if (data != null) {
+                    if (data.getClipData() != null) {
+                        // Getting the length of data and logging up the logs using index
+                        for (int index = 0; index < data.getClipData().getItemCount(); index++) {
+
+                            // Getting the URIs of the selected files and logging them into logcat at debug level
+                            Uri uri = data.getClipData().getItemAt(index).getUri();
+                            String filename = "000";
+
+                            Log.d(TAG, "onActivityResult: filePath : " + uri.getPath());
+
+
+                            filesArrayList.add(new FileList_AddFiles(filename, uri));
+
+                            Log.d("filesUri [" + uri + "] : ", String.valueOf(uri) + " \nFile Name : " + filename + "\n\n");
+                        }
+                    } else {
+
+                        // Getting the URI of the selected file and logging into logcat at debug level
+                        Uri uri = data.getData();
+                        String filenamesingle = "111";
+                        filesArrayList.add(new FileList_AddFiles(filenamesingle, uri));
+
+                        Log.d("filesUri [" + uri + "] : ", String.valueOf(uri) + " \nFile Name : " + filenamesingle + "\n\n");
+                    }
+
+
+                    filesAdapter.notifyDataSetChanged();
+
+                }
+            }
+        }
+    }
+
+
+
 }

@@ -45,13 +45,9 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
 
-        int size = 0;
         Log.d(TAG, "getItemCount: inside adapter : " + mFileObject.size());
-        if (mFileObject.size() > 1) {
-            size = mFileObject.size() - 1;
 
-        }
-        return size;
+        return mFileObject.size();
     }
 
 
