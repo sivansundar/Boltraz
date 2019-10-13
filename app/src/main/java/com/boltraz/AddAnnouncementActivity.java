@@ -2,9 +2,11 @@ package com.boltraz;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.enums.EPickType;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -249,7 +252,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                 if (data != null) {
                     if (data.getClipData() != null) {
                         // Getting the length of data and logging up the logs using index
-                        /*for (int index = 0; index < data.getClipData().getItemCount(); index++) {
+                        for (int index = 0; index < data.getClipData().getItemCount(); index++) {
 
                             // Getting the URIs of the selected files and logging them into logcat at debug level
                             Uri uri = data.getClipData().getItemAt(index).getUri();
@@ -282,7 +285,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                             filesArrayList.add(new FileList_AddFiles(filename, uri));
 
                             Log.d("filesUri [" + uri + "] : ", String.valueOf(uri) + " \nFile Name : " + filename + "\n\n");
-                        }*/
+                        }
                     } else {
 
                         // Getting the URI of the selected file and logging into logcat at debug level
