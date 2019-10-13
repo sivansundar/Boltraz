@@ -26,11 +26,8 @@ import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.google.android.material.button.MaterialButton;
 import com.jaredrummler.materialspinner.MaterialSpinner;
-import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
-import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.enums.EPickType;
-import com.vansuita.pickimage.listeners.IPickResult;
 
 import java.util.ArrayList;
 
@@ -135,7 +132,15 @@ public class AddAnnouncementActivity extends AppCompatActivity {
         addImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PickImageDialog.build(setup, new IPickResult() {
+
+
+                Intent imagePickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                imagePickerIntent.setType("image/*");
+                String[] mimeTypes = {"image/jpeg", "image/png"};
+                imagePickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                startActivityForResult(imagePickerIntent, 1001);
+
+                /*PickImageDialog.build(setup, new IPickResult() {
 
                     @SuppressLint("LongLogTag")
                     @Override
@@ -151,7 +156,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
                         }
                     }
-                }).show(getSupportFragmentManager());
+                }).show(getSupportFragmentManager());*/
             }
         });
 
@@ -165,7 +170,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                 intent.setType("*/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
-                startActivityForResult(intent, 1001);
+                startActivityForResult(intent, 1002);
 
 
                 /*chooserDialog = new ChooserDialog(AddAnnouncementActivity.this, R.style.FileChooserStyle_Dark)
@@ -240,23 +245,44 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1001) {
+            if (requestCode == 1002) {
                 if (data != null) {
                     if (data.getClipData() != null) {
                         // Getting the length of data and logging up the logs using index
-                        for (int index = 0; index < data.getClipData().getItemCount(); index++) {
+                        /*for (int index = 0; index < data.getClipData().getItemCount(); index++) {
 
                             // Getting the URIs of the selected files and logging them into logcat at debug level
                             Uri uri = data.getClipData().getItemAt(index).getUri();
                             String filename = "000";
+                            String displayName = "";
+                            File myFile = new File(uri.toString());
+
 
                             Log.d(TAG, "onActivityResult: filePath : " + uri.getPath());
+
+                            if (uri.toString().startsWith("content://")) {
+                                Cursor cursor = null;
+                                try {
+                                    cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null);
+                                    if (cursor != null && cursor.moveToFirst()) {
+                                        filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                    }
+                                } finally {
+                                    cursor.close();
+                                }
+                            } else if (uri.toString().startsWith("file://")) {
+                                filename = myFile.getName();
+
+                            }
+
+                            Log.d(TAG, "\nonActivityResult: DISPLAY NAME " + displayName);
+                            Log.d(TAG, "\nonActivityResult: DISPLAY NAME " + displayName);
 
 
                             filesArrayList.add(new FileList_AddFiles(filename, uri));
 
                             Log.d("filesUri [" + uri + "] : ", String.valueOf(uri) + " \nFile Name : " + filename + "\n\n");
-                        }
+                        }*/
                     } else {
 
                         // Getting the URI of the selected file and logging into logcat at debug level
