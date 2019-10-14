@@ -419,6 +419,8 @@ public class MainFragment extends Fragment {
                     name = user.getName();
                     labelName.setText(name);
 
+                    editor.putString("name", name);
+
                     mProgressBar.dismiss();
                 }
 
@@ -526,7 +528,7 @@ public class MainFragment extends Fragment {
         image_recyclerView.setAdapter(adapter);
 
 
-        startActivity(new Intent(getContext(), AddAnnouncementActivity.class));
+        startActivity(new Intent(getContext(), AddAnnouncementActivity.class).putExtra(sharedPreferences.getString("name", "XXX"), "XXX"));
 
 
         String[] announ_type = {"None", "Assignment"};

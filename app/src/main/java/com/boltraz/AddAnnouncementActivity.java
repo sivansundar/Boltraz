@@ -1,7 +1,10 @@
 package com.boltraz;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -16,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,13 +30,26 @@ import com.boltraz.ListAdapter.ImageListAdapter;
 import com.boltraz.Model.FileList_AddFiles;
 import com.boltraz.Model.ImageViews_AddAnnouncement;
 import com.codekidlabs.storagechooser.StorageChooser;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.enums.EPickType;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +66,14 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     ArrayList<FileList_AddFiles> filesTempList;
 
     FilesAdapter filesAdapter;
+    ImageListAdapter adapter;
+
+    String classx = "";
+    String annountype = "None";
+    String username = "";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    FirebaseDatabase mDatabase;
 
     @BindView(R.id.add_image_btn)
     MaterialButton addImageBtn;
@@ -66,7 +91,8 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     TextView filesHeaderText;
     @BindView(R.id.post_btn)
     Button postBtn;
-
+    DatabaseReference databaseReference;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +100,18 @@ public class AddAnnouncementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_announcement);
         ButterKnife.bind(this);
 
+        mProgressDialog = new ProgressDialog(this);
+
+        sharedPreferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        getSharedPrefValues();
+
+        mDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mDatabase.getReference();
+
         String[] announ_type = {"None", "Assignment"};
+
 
         announTypeSpinner.setItems(announ_type);
         announTypeSpinner.setTextColor(Color.WHITE);
@@ -84,9 +121,11 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                 Toast.makeText(AddAnnouncementActivity.this, "View : " + view.getText().toString(), Toast.LENGTH_SHORT).show();
 
                 if (view.getText().toString().equalsIgnoreCase("Assignment")) {
+                    annountype = "Assignment";
                     addFileBtn.setVisibility(View.VISIBLE);
                     filesHeaderText.setVisibility(View.VISIBLE);
                 } else {
+                    annountype = "None";
                     addFileBtn.setVisibility(View.GONE);
                     filesHeaderText.setVisibility(View.GONE);
                 }
@@ -97,7 +136,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
         filesTempList = new ArrayList<>();
 
         imageRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        ImageListAdapter adapter = new ImageListAdapter(uriArrayList);
+        adapter = new ImageListAdapter(uriArrayList);
         imageRecyclerView.setAdapter(adapter);
 
 
@@ -136,12 +175,15 @@ public class AddAnnouncementActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                ImagePicker.create(AddAnnouncementActivity.this) // Activity or Fragment
+                        .start();
 
-                Intent imagePickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+
+                /*Intent imagePickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 imagePickerIntent.setType("image/*");
                 String[] mimeTypes = {"image/jpeg", "image/png"};
                 imagePickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                startActivityForResult(imagePickerIntent, 1001);
+                startActivityForResult(imagePickerIntent, 1001);*/
 
                 /*PickImageDialog.build(setup, new IPickResult() {
 
@@ -232,13 +274,142 @@ public class AddAnnouncementActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "PostButton");
 
+                String title = announTitleEdittext.getText().toString();
+                String desc = announDescEditText.getText().toString();
+                Log.d(TAG, "onClick: CLASSX : ALERT DIALOG" + classx);
+
+                if (title.isEmpty() || desc.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Your Title or Description is missing. Say something!", Toast.LENGTH_LONG).show();
+                } else {
+
+                    String post_key = databaseReference.child("classAnnouncements").child(classx).push().getKey();
+                    Toast.makeText(AddAnnouncementActivity.this, "POST KEY : " + post_key, Toast.LENGTH_SHORT).show();
+
+                    // Figure out hashmaps
+                    HashMap<String, Object> postValues = new HashMap<String, Object>();
+                    postValues.put("title", title);
+                    postValues.put("desc", desc);
+                    postValues.put("author", username);
+                    postValues.put("postID", post_key);
+                    postValues.put("type", annountype);
+                    postValues.put("date", getDate());
+                    postValues.put("time", getTime());
+
+                    Log.d(TAG, "onClick: ANNOUN TYPE : " + annountype);
+
+
+                    //Post content with either images or files or both.
+
+                    startPostUpload(postValues, post_key, classx, annountype);
+
+
+                }
+
                 for (int i = 0; i < filesArrayList.size() - 1; i++) {
                     Log.d(TAG, filesArrayList.get(i).getList_fileName() + " " + filesArrayList.get(i).getFile_uri() + "\n");
 
                 }
+
+
             }
         });
 
+
+    }
+
+    private void startPostUpload(HashMap<String, Object> postValues, String key, String classx, String announcement_type) {
+        mProgressDialog.setMessage("Posting....");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+
+
+        if (announcement_type.equalsIgnoreCase("assignment")) {
+            databaseReference.child("Assignments").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (task.isSuccessful()) {
+
+                        if (!uriArrayList.isEmpty()) {
+                            //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                            // startImageUpload(key, classx, announcement_type);
+                        }
+                        mProgressDialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
+
+
+                        mProgressDialog.dismiss();
+
+                    } else {
+                        mProgressDialog.dismiss();
+                    }
+                }
+            });
+        } else {
+            databaseReference.child("classAnnouncements").child(classx).child(key).setValue(postValues).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
+
+                        if (!uriArrayList.isEmpty()) {
+                            //Images and file upload goes here.
+                            Toast.makeText(getApplicationContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
+                            //startImageUpload(key, classx, announcement_type);
+                        }
+
+                        mProgressDialog.dismiss();
+
+                    } else {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Could not add this post. ERROR : " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Upload failed! : " + e, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        }
+
+
+    }
+
+    private String getTime() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String time = simpleDateFormat.format(calendar.getTime());
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= 4; i++) {
+
+            sb.append(time.charAt(i));
+
+
+        }
+
+        String currentTime = sb.toString();
+
+        return currentTime;
+    }
+
+    @SuppressLint("LongLogTag")
+    private String getDate() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        Log.d(TAG, "onClick: DATE : " + date);
+
+        return date;
+    }
+
+    private void getSharedPrefValues() {
+
+        classx = sharedPreferences.getString("classxx", "SSS");
+        username = sharedPreferences.getString("name", "XXX");
 
     }
 
@@ -246,6 +417,21 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     @SuppressLint("LongLogTag")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // Get a list of picked images
+            List<Image> images = ImagePicker.getImages(data);
+
+            File file;
+            for (int i = 0; i < images.size(); i++) {
+                file = new File(images.get(1).getPath());
+                Log.d(TAG, "onActivityResult: IMAGE LIST : " + Uri.fromFile(new File(images.get(i).getPath())) + "\n");
+                uriArrayList.add(new ImageViews_AddAnnouncement(Uri.fromFile(new File(images.get(i).getPath()))));
+                adapter.notifyDataSetChanged();
+            }
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+        }
 
         if (resultCode == RESULT_OK) {
             if (requestCode == 1002) {
