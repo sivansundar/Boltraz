@@ -10,14 +10,18 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,7 +43,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -66,6 +73,8 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     TextView timeTextView;
     @BindView(R.id.img_recyclerView)
     RecyclerView imgRecyclerView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private FirebaseDatabase mDatabase;
     private DatabaseReference databaseReference, todoReference;
     String UID, imgUrl;
@@ -74,8 +83,9 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
     public SharedPreferences preferences;
 
     String todoPostKey;
-    private android.app.ProgressDialog mProgressBar;
-
+    ArrayList<String> imageArrayList;
+    FirebaseStorage mStorage;
+    private ProgressDialog mProgressBar;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -83,6 +93,10 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_announcements);
         ButterKnife.bind(this);
+
+        setSupportActionBar(toolbar);
+
+        imageArrayList = new ArrayList<>();
 
         title = getIntent().getStringExtra("title");
         desc = getIntent().getStringExtra("desc");
@@ -92,9 +106,11 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference().child("classAnnouncements");
+        mStorage = FirebaseStorage.getInstance();
         todoReference = mDatabase.getReference().child("students");
 
         preferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE);
+
 
         if (TextUtils.isEmpty(title) && TextUtils.isEmpty(desc) && TextUtils.isEmpty(post_key) && TextUtils.isEmpty(classxxval) && TextUtils.isEmpty(imgUrl)) {
 
@@ -143,6 +159,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
     }
 
+
     private void getPostImages(String post_key, String classxxval) {
 
         //  mProgressBar.setMessage("Loading.....");
@@ -169,7 +186,6 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
                 imageURLViewHolder.setImageUrl(imageUrl);
 
 
-
             }
 
             @NonNull
@@ -189,12 +205,13 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("LongLogTag")
     private void getPostDetails(String PostKey, String classVal) {
 
         Log.d("values getPostDetails : ", "onDataChange: getPostDetails : " + classxxval + " : postKey : " + post_key);
 
 
-        databaseReference.child(classVal).child(PostKey).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(classVal).child(PostKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ClassAnnouncementsModel model;
@@ -297,6 +314,96 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+
+        if (preferences.getString("classrep", "XXX").equalsIgnoreCase("yes")) {
+            getMenuInflater().inflate(R.menu.post_menu, menu);
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.nav_delete_post) {
+
+          /* for (int i = 0 ; i<imageArrayList.size()+1; i++) {
+                Log.d(TAG, "onOptionsItemSelected: IMAGES : " + imageArrayList.get(i));
+          *//*
+             *//*
+
+            }*/
+//            Log.d(TAG, "Size: IMAGES : " + imageArrayList.size());
+
+
+            android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(ClassAnnouncementsActivity.this);
+            alert.setTitle("Delete this post?");
+            alert.setMessage("Are you sure you want to delete '" + title + "' ?");
+            alert.setNeutralButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            })
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            deletePost();
+                        }
+                    })
+                    .show();
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void deletePost() {
+
+        databaseReference.child(classxxval).child(post_key).child("imgURLs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
+
+                    String imageURL = item_snapshot.child("imgUrl").getValue().toString();
+                    Log.d("item id ", item_snapshot.child("imgUrl").getValue().toString());
+                    StorageReference photoRef = mStorage.getReferenceFromUrl(imageURL);
+                    photoRef.delete();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseReference.child(classxxval).child(post_key).removeValue(new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Toast.makeText(ClassAnnouncementsActivity.this, "Post deleted successfully", Toast.LENGTH_SHORT).show();
+
+                Log.d(TAG, "onComplete: Post Deleted successfully : " + post_key);
+                startActivity(new Intent(ClassAnnouncementsActivity.this, MainActivity.class));
+
+            }
+        });
+    }
+
     public class ImageURLViewHolder extends RecyclerView.ViewHolder {
         public View mView;
 
@@ -313,6 +420,7 @@ public class ClassAnnouncementsActivity extends AppCompatActivity {
             PhotoView imageView = mView.findViewById(R.id.imageView_item);
             Glide.with(getApplicationContext()).load(imageUrl).into(imageView);
 
+            imageArrayList.add(imageUrl);
 
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -129,6 +129,7 @@ public class AssignmentListActivity extends AppCompatActivity {
 
                                         snackbar.show();
 
+                                        startActivity(new Intent(AssignmentListActivity.this, MainActivity.class));
                                         firebaseRecyclerAdapter.notifyItemRemoved(i);
 
                                     }

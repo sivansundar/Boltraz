@@ -15,11 +15,33 @@
 
         <com.google.android.material.card.MaterialCardView
         android:id="@+id/announ_card"
-        app:cardElevation="8dp" app:cardBackgroundColor="#000"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#000"
         android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            app:cardElevation="8dp">
 
-        <RelativeLayout
+            <com.google.android.material.appbar.AppBarLayout
+                style="@style/MyOverflowButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="0dp">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    style="@style/MyOverflowButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#121212"
+                    app:title="|"
+                    app:titleTextColor="#121212">
+
+                </androidx.appcompat.widget.Toolbar>
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+
+            <RelativeLayout
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -27,7 +49,7 @@
             <RelativeLayout
                 android:id="@+id/title_holder"
                 android:padding="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:layout_width="match_parent"
                 android:layout_height="180dp">
 

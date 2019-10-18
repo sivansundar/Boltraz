@@ -34,10 +34,14 @@ import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.enums.EPickType;
@@ -74,6 +78,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     FirebaseDatabase mDatabase;
+    public StorageReference mStorage;
 
     @BindView(R.id.add_image_btn)
     MaterialButton addImageBtn;
@@ -109,6 +114,7 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance();
         databaseReference = mDatabase.getReference();
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         String[] announ_type = {"None", "Assignment"};
 
@@ -330,9 +336,9 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
 
-                        if (!uriArrayList.isEmpty()) {
+                        if (uriArrayList.isEmpty()) {
                             //Toast.makeText(getContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
-                            // startImageUpload(key, classx, announcement_type);
+                            startImageUpload(key, classx, announcement_type);
                         }
                         mProgressDialog.dismiss();
                         Toast.makeText(getApplicationContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
@@ -352,10 +358,14 @@ public class AddAnnouncementActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Toast.makeText(getApplicationContext(), "Post added successfully." + key, Toast.LENGTH_SHORT).show();
 
-                        if (!uriArrayList.isEmpty()) {
+                        if (uriArrayList.isEmpty()) {
                             //Images and file upload goes here.
                             Toast.makeText(getApplicationContext(), "You got some images boss", Toast.LENGTH_SHORT).show();
-                            //startImageUpload(key, classx, announcement_type);
+                            startImageUpload(key, classx, announcement_type);
+                        }
+
+                        if (!filesArrayList.isEmpty()) {
+
                         }
 
                         mProgressDialog.dismiss();
@@ -379,6 +389,174 @@ public class AddAnnouncementActivity extends AppCompatActivity {
 
 
     }
+
+    @SuppressLint("LongLogTag")
+    private void startImageUpload(String post_key, String classxxxVal, String announcement_type) {
+
+        //  Log.d(TAG, "startImageUpload: Title : " + title_text + ": \n Desc : " + desc_text);
+        mProgressDialog.setMessage("Posting...");
+        mProgressDialog.show();
+
+        if (announcement_type.equalsIgnoreCase("Assignment")) {
+            StorageReference filePath = mStorage.child("Assignment").child(classxxxVal).child(post_key);
+            //Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
+
+
+            /*
+            ##### Image upload #####
+
+            for (int i = 0; i < uriArrayList.size(); i++) {
+                // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
+
+                Uri imgfile = uriArrayList.get(i).getImageButtonUri();
+
+                Log.d(TAG, "startImageUpload: IMAGE URI AT uriList[" + i + "] is : " + imgfile.toString());
+                filePath.child(imgfile.getLastPathSegment()).putFile(imgfile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            filePath.child(imgfile.getLastPathSegment()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+
+                                    if (task.isSuccessful()) {
+                                        String downloadUrl = task.getResult().toString();
+
+                                        Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
+
+                                        HashMap<String, Object> downloadurlhash = new HashMap<>();
+                                        downloadurlhash.put("imgUrl", downloadUrl);
+
+
+                                        databaseReference.child("Assignments").child(classxxxVal).child(post_key).child("imgURLs").push().setValue(downloadurlhash)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccess: Download url's updated.");
+
+                                                        // Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
+
+
+
+                                                        mProgressDialog.dismiss();
+
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                            //String downloadUrl = filePath.getDownloadUrl().toString();
+
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Failed ", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                        }
+                    }
+                });
+
+            }*/
+
+            for (int i = 0; i < filesArrayList.size(); i++) {
+
+                Uri fileUri = filesArrayList.get(i).getFile_uri();
+                String filename = filesArrayList.get(i).getList_fileName();
+
+                //FilePath
+                filePath.child("Files").child(fileUri.getLastPathSegment()).putFile(fileUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            //Retrieve File URL
+                            filePath.child("Files").child(fileUri.getLastPathSegment()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        String downloadURL = task.getResult().toString();
+                                        Log.d(TAG, "onComplete: DOWNLOAD URL of " + filename + " is : " + downloadURL);
+                                    } else {
+                                        Log.d(TAG, "onComplete: FAILED! : " + task.getException().getLocalizedMessage());
+                                    }
+                                }
+                            });
+
+                        } else if (!task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: FAILED to upload file : " + task.getException().getLocalizedMessage());
+                        }
+                    }
+                });
+            }
+
+
+        } else {
+            StorageReference filePath = mStorage.child("classAnnouncements").child(classxxxVal).child(post_key);
+            // Log.d(TAG, "startPosting: Upload image : " + uploadImage.toString());
+
+
+            for (int i = 0; i < uriArrayList.size(); i++) {
+                // work on multiple uploads. ImageURL in the database should have another node for itself like the todos list.
+
+                Uri imgfile = uriArrayList.get(i).getImageButtonUri();
+
+                Log.d(TAG, "startImageUpload: IMAGE URI AT uriList[" + i + "] is : " + imgfile.toString());
+                filePath.child(imgfile.getLastPathSegment()).putFile(imgfile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            filePath.child(imgfile.getLastPathSegment()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @SuppressLint("LongLogTag")
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+
+                                    if (task.isSuccessful()) {
+                                        String downloadUrl = task.getResult().toString();
+
+                                        Log.d(TAG, "onSuccess: downloadUrl : " + downloadUrl);
+
+
+                                        HashMap<String, Object> downloadurlhash = new HashMap<>();
+                                        downloadurlhash.put("imgUrl", downloadUrl);
+
+
+                                        databaseReference.child("classAnnouncements").child(classxxxVal).child(post_key).child("imgURLs").push().setValue(downloadurlhash)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @SuppressLint("LongLogTag")
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        Log.d(TAG, "onSuccess: Download url's updated.");
+
+                                                        // Toast.makeText(getContext(), "Download URLs updated : " + post_key, Toast.LENGTH_SHORT).show();
+
+
+                                                        mProgressDialog.dismiss();
+
+                                                    }
+                                                });
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "FAILED : " + task.getException(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Failed ", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "onComplete: FAILED : ", task.getException());
+                        }
+                    }
+                });
+
+            }
+        }
+
+
+        uriArrayList.clear();
+
+    }
+
 
     private String getTime() {
         Calendar calendar = Calendar.getInstance();

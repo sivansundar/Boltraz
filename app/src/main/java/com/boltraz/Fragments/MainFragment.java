@@ -26,11 +26,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.boltraz.AddAnnouncementActivity;
 import com.boltraz.AssignmentListActivity;
 import com.boltraz.ClassAnnouncementsActivity;
 import com.boltraz.ListAdapter.FilesAdapter;
@@ -141,6 +141,8 @@ public class MainFragment extends Fragment {
 
     String announcement_type;
     String CLASSXX = "";
+
+    String classrep;
 
 
     public FirebaseDatabase mDatabase;
@@ -287,7 +289,7 @@ public class MainFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserModel userModel = dataSnapshot.getValue(UserModel.class);
 
-                String classrep = userModel.getClassrep();
+                classrep = userModel.getClassrep();
                 CLASSXX = "Class" + userModel.getClasssection();
 
                 String usn = userModel.getUSN();
@@ -312,6 +314,7 @@ public class MainFragment extends Fragment {
                 editor.putString("dp_url", dp_url);
                 editor.putString("dept", dept);
                 editor.putString("email", email);
+                editor.putString("classrep", classrep);
                 editor.putInt("semester", semester);
                 editor.apply();
 
@@ -415,6 +418,7 @@ public class MainFragment extends Fragment {
                     user = dataSnapshot.getValue(UserModel.class);
 
 
+
                     //Toast.makeText(getContext(), "Class rep : " + classrep, Toast.LENGTH_SHORT).show();
                     name = user.getName();
                     labelName.setText(name);
@@ -472,6 +476,7 @@ public class MainFragment extends Fragment {
                 classAnnouncementsViewHolder.setTitle(timetableModel.getTitle());
                 classAnnouncementsViewHolder.setDescription(timetableModel.getDesc());
 
+                classAnnouncementsViewHolder.mView.setTag(timetableModel.getPostID());
                 classAnnouncementsViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -488,6 +493,74 @@ public class MainFragment extends Fragment {
                         Log.d(TAG, "onClick: IMAGE URL OnClick : " + imageUrl);
                         startActivity(intent);
 
+
+                    }
+                });
+
+
+                classAnnouncementsViewHolder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+
+                        if (classrep.equalsIgnoreCase("yes")) {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                            alert.setTitle("Delete post?");
+                            alert.setNeutralButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            alert.setMessage("Are you sure you want to delete '" + title + "'? ");
+                            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+
+                                    databaseReference.child("classAnnouncements").child(classxx).child(post_key).removeValue(new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                                            Snackbar snackbar = Snackbar
+                                                    .make(rootView, "Post deleted successfully", Snackbar.LENGTH_LONG);
+
+                                            snackbar.show();
+
+
+                                        }
+                                    });
+
+
+
+
+
+
+                                 /*   filePath.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+
+
+                                        }
+
+                                    })
+
+                                    if (filePath.getBucket().isEmpty()) {
+                                        Log.d(TAG, "onClick: file path is empty : " + filePath.toString());
+                                        Log.d(TAG, "onClick: \n");
+                                    }
+                                    else {
+                                        Log.d(TAG, "onClick: file path is not empty : " + filePath.toString());
+
+                                    }*/
+
+                                }
+                            });
+
+                            alert.show();
+                        }
+
+                        return false;
                     }
                 });
             }
@@ -528,7 +601,7 @@ public class MainFragment extends Fragment {
         image_recyclerView.setAdapter(adapter);
 
 
-        startActivity(new Intent(getContext(), AddAnnouncementActivity.class).putExtra(sharedPreferences.getString("name", "XXX"), "XXX"));
+        // startActivity(new Intent(getContext(), AddAnnouncementActivity.class).putExtra(sharedPreferences.getString("name", "XXX"), "XXX"));
 
 
         String[] announ_type = {"None", "Assignment"};
