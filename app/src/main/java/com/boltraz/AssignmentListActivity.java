@@ -173,6 +173,10 @@ public class AssignmentListActivity extends AppCompatActivity {
 
             delete_icon = mView.findViewById(R.id.delete_icon);
 
+            if (!preferences.getString("classrep", "XXX").equalsIgnoreCase("yes")) {
+                delete_icon.setVisibility(View.GONE);
+            }
+
         }
 
         public void getTitle(String title) {
